@@ -1,5 +1,6 @@
 package it.fipavpuglia.taranto.lm.gui;
 
+import it.fipavpuglia.taranto.lm.core.Anagrafica;
 import it.fipavpuglia.taranto.lm.core.Carta;
 import it.fipavpuglia.taranto.lm.core.Kernel;
 import it.fipavpuglia.taranto.lm.gui.events.*;
@@ -28,8 +29,10 @@ import org.lp.myUtils.Swing;
 class Mediator {
     private static Mediator proxy = null;
     private Kernel core = Kernel.getInstance();
-    private final FileNameExtensionFilter fnfeXLS = new FileNameExtensionFilter("Excel file", new String[] { "xls", "xlsx" });
-    private final FileNameExtensionFilter fnfeZIP = new FileNameExtensionFilter("ZIP file", "zip");
+    private final FileNameExtensionFilter fnfeXLS =
+            new FileNameExtensionFilter("Excel file", new String[] { "xls", "xlsx" });
+    private final FileNameExtensionFilter fnfeZIP =
+            new FileNameExtensionFilter("ZIP file", "zip");
     private List listenerTextPane  = new ArrayList();
 
     private Mediator(){}
@@ -99,21 +102,33 @@ class Mediator {
         core.loadXML();
     }
 
-    @SuppressWarnings("unchecked")
-	void saveArbitri(Vector dataVector) {
-        TreeMap<String, String> tm = new TreeMap<String, String>();
+    void saveArbitri(Vector dataVector) {
+        TreeMap<String, Anagrafica> tm = new TreeMap<String, Anagrafica>();
         boolean _break = false;
-        String name="";
+        String code="";
         for (int i=0; i<dataVector.size(); i++){
             Vector temp = (Vector)dataVector.elementAt(i);
-            name = ((String)temp.elementAt(0)).toUpperCase();
-            if (tm.containsKey(name)){
+            code = ((String)temp.elementAt(0)).toUpperCase();
+            if (tm.containsKey(code)){
                 _break=true;
-                printAlert("Trovato doppione: " + name);
+                printAlert("Trovato doppione: " + code);
                 break;
             } else {
-                String resid = ((String)temp.elementAt(1)).toUpperCase();
-                tm.put(name,resid);
+                String residenza_carta = ((String)temp.elementAt(1)).toUpperCase();
+                String ruolo = (String)temp.elementAt(2);
+                String nome = (String)temp.elementAt(3);
+                String sesso = (String)temp.elementAt(4);
+                String data_nascita = (String)temp.elementAt(5);
+                String luogo_nascita = (String)temp.elementAt(6);
+                String codice_fiscale = (String)temp.elementAt(7);
+                String residenza_città = (String)temp.elementAt(8);
+                String indirizzo = (String)temp.elementAt(9);
+                String cap = (String) temp.elementAt(10);
+                
+                Anagrafica a = new Anagrafica(nome, luogo_nascita, data_nascita, codice_fiscale,
+                        residenza_città, indirizzo, cap, ruolo, sesso, residenza_carta);
+                
+                tm.put(code, a);
             }
         }
         if (!_break)
