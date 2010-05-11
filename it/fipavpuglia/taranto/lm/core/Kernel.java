@@ -38,7 +38,7 @@ public class Kernel {
     private final String TABLE_CARTA="Carta";
     private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
-    private final File XML_ARBITRI = new File("arbitri.xml");
+    private final File XML_ANAGRAFICA = new File("anagrafica.xml");
     private final File XML_ECCEZIONI = new File("eccezioni.xml");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
 
@@ -46,7 +46,7 @@ public class Kernel {
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
 
-    private TreeMap<String, String> tmArbitri;
+    private TreeMap<String, Anagrafica> tmArbitri;
     private TreeMap<Carta, String> tmCarta;
     private TreeMap<String, TreeSet<Date>> tmEccezioni;
     /**Costruttore privato*/
@@ -63,8 +63,8 @@ public class Kernel {
     public void loadXML() {
         Xml temp = new Xml();
         try {
-            fireNewFrameEvent(TABLE_ARBITRI,temp.initializeReaderArbitro(XML_ARBITRI));
-            tmArbitri = temp.getMapArbitri();
+            fireNewFrameEvent(TABLE_ARBITRI,temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
+            tmArbitri = temp.getMapAnagrafica();
             fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
             fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
@@ -203,7 +203,7 @@ public class Kernel {
     private void analyzeSheet(Sheet sheet) throws NumberFormatException, IOException{
         String arbitro = sheet.getSheetName().toUpperCase();
         if (tmArbitri.containsKey(arbitro)){
-            String residenza = tmArbitri.get(arbitro);
+            String residenza = tmArbitri.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             Date oldData = new Date(0);
             Iterator<Date> it = null;
@@ -254,7 +254,7 @@ public class Kernel {
         String arbitro = sheet.getSheetName().toUpperCase();
         boolean verify = true;
         if (tmArbitri.containsKey(arbitro)){
-            String residenza = tmArbitri.get(arbitro);
+            String residenza = tmArbitri.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             while (rows.hasNext()){
                 Row row = (Row) rows.next ();
@@ -279,7 +279,7 @@ public class Kernel {
         return verify;
     }
 
-    public void saveArbitri(TreeMap<String, String> tm) {
+    public void saveArbitri(TreeMap<String, Anagrafica> tm) {
         if (tm.size()>0){
             try {
                 Xml save = new Xml();
@@ -287,10 +287,10 @@ public class Kernel {
                 save.initializeWriterArbitri();
                 while (it.hasNext()) {
                     String key = it.next();
-                    String value = tm.get(key);
+                    Anagrafica value = tm.get(key);
                     save.addItemArbitro(key, value);
                 }
-                save.writeArbitri(XML_ARBITRI);
+                save.writeAnagrafica(XML_ANAGRAFICA);
                 printOk("XML arbitri aggiornato");
                 tmArbitri = tm;
             } catch (IOException ex) {
@@ -354,8 +354,8 @@ public class Kernel {
 
     public void backupXml(String backup) {
         ArrayList<File> files = new ArrayList<File>();
-        if (XML_ARBITRI.exists())
-            files.add(XML_ARBITRI);
+        if (XML_ANAGRAFICA.exists())
+            files.add(XML_ANAGRAFICA);
         if (XML_CARTA.exists())
             files.add(XML_CARTA);
         if (XML_ECCEZIONI.exists())

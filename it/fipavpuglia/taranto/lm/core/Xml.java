@@ -27,8 +27,17 @@ class Xml {
     //VARIABLES PRIVATE FINAL    
     private final String TAG_ROOT = "ROOT";
     private final String TAG_ITEM = "ITEM";
-    private final String TAG_ARBITRO_NOME = "NOME";
-    private final String TAG_ARBITRO_PAESE = "PAESE";    
+    private final String TAG_ANAGRAFICA_CODICE = "CODICE";
+    private final String TAG_ANAGRAFICA_PAESE = "PAESE";
+    private final String TAG_ANAGRAFICA_NOME = "NOME";
+    private final String TAG_ANAGRAFICA_RUOLO = "RUOLO";
+    private final String TAG_ANAGRAFICA_DATAN = "DATA NASCITA";
+    private final String TAG_ANAGRAFICA_LUOGON = "LUOGO NASCITA";
+    private final String TAG_ANAGRAFICA_SESSO = "SESSO";
+    private final String TAG_ANAGRAFICA_CODFIS = "CODICE FISCALE";
+    private final String TAG_ANAGRAFICA_CITTA = "RESIDENZA";
+    private final String TAG_ANAGRAFICA_INDIRIZZO = "INDIRIZZO";
+    private final String TAG_ANAGRAFICA_CAP = "CAP";
     private final String TAG_CARTA_PAESE1 = "PAESE1";
     private final String TAG_CARTA_PAESE2 = "PAESE2";
     private final String TAG_CARTA_KM = "KM";
@@ -37,8 +46,8 @@ class Xml {
     //VARIABLES PRIVATE
     private Element root;
     //private org.w3c.dom.Document w3cEccezioni;
-    private org.jdom.Document jdomCarta, jdomArbitri, jdomEccezioni;
-    private TreeMap<String, String> tmArbitri = null;
+    private org.jdom.Document jdomCarta, jdomAnagrafica, jdomEccezioni;
+    private TreeMap<String, Anagrafica> tmAnagrafica = null;
     private TreeMap<Carta, String> tmCarta = null;
     private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
     /**inizializza il documento Carta per la scrittura */
@@ -49,7 +58,7 @@ class Xml {
     /**inizializza il documento Arbitri per la scrittura */
     void initializeWriterArbitri(){
         root = new Element(TAG_ROOT);
-        jdomArbitri = new Document(root);
+        jdomAnagrafica = new Document(root);
     }
     /**inizializza il documento Eccezioni per la scrittura */
     void initializeWriterEccezioni(){
@@ -80,14 +89,20 @@ class Xml {
      * @param key
      * @param value
      */
-    void addItemArbitro(String key, String value) {
+    void addItemArbitro(String key, Anagrafica value) {
         Element item = new Element(TAG_ITEM);
-        Element nome = new Element(TAG_ARBITRO_NOME);
-        nome.setText(key);
-        Element paese = new Element(TAG_ARBITRO_PAESE);
-        paese.setText(value);
-        item.addContent(nome);
+        Element codice = new Element(TAG_ANAGRAFICA_CODICE);
+        codice.setText(key);
+        Element paese = new Element(TAG_ANAGRAFICA_PAESE);
+        paese.setText(value.getCity_card());
+        Element ruolo = new Element(TAG_ANAGRAFICA_RUOLO);
+        ruolo.setText(value.getRole());
+        Element nome = new Element(TAG_ANAGRAFICA_NOME);
+        nome.setText(value.getSurname_name());
+        item.addContent(codice);
         item.addContent(paese);
+        item.addContent(nome);
+        item.addContent(ruolo);
         root.addContent(item);
     }
 
@@ -112,8 +127,8 @@ class Xml {
      *
      * @throws IOException
      */
-    void writeArbitri(File xml) throws IOException{
-        write().output(jdomArbitri, new FileOutputStream(xml));
+    void writeAnagrafica(File xml) throws IOException{
+        write().output(jdomAnagrafica, new FileOutputStream(xml));
     }
     /**Scrive l'xml eccezioni
      *
@@ -139,37 +154,57 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
-	ArrayList<String[]> initializeReaderArbitro(File xml) throws JDOMException, IOException{
+    ArrayList<String[]> initializeReaderAnagrafica(File xml) throws JDOMException,
+                IOException{
         ArrayList<String[]> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
-            jdomArbitri = new SAXBuilder().build(xml);
-            int size = jdomArbitri.getRootElement().getChildren().size();
+            jdomAnagrafica = new SAXBuilder().build(xml);
+            int size = jdomAnagrafica.getRootElement().getChildren().size();
             if (size>0){
-                tmArbitri = new TreeMap<String, String>();
+                tmAnagrafica = new TreeMap<String, Anagrafica>();
                 array = new ArrayList<String[]>();
-                Iterator iterator = jdomArbitri.getRootElement().getChildren().iterator();
+                Iterator iterator = jdomAnagrafica.getRootElement().getChildren().iterator();
                 while(iterator.hasNext()){
                     Element role = (Element)iterator.next();
-                    String arbitro = role.getChild(TAG_ARBITRO_NOME).getText().toUpperCase();
-                    String residenza = role.getChild(TAG_ARBITRO_PAESE).getText().toUpperCase();
-                    String[] temp = {arbitro, residenza};
+                    String codice = getItemXml(role, TAG_ANAGRAFICA_CODICE).toUpperCase();
+                    String paese = getItemXml(role, TAG_ANAGRAFICA_PAESE).toUpperCase();
+                    String ruolo = getItemXml(role, TAG_ANAGRAFICA_RUOLO);
+                    String nome = getItemXml(role, TAG_ANAGRAFICA_NOME);
+                    String luogo = getItemXml(role, TAG_ANAGRAFICA_LUOGON);
+                    String data = getItemXml(role, TAG_ANAGRAFICA_DATAN);
+                    String sesso = getItemXml(role, TAG_ANAGRAFICA_SESSO);
+                    String codfis = getItemXml(role, TAG_ANAGRAFICA_CODFIS);
+                    String resid = getItemXml(role, TAG_ANAGRAFICA_CITTA);
+                    String indirizzo = getItemXml(role, TAG_ANAGRAFICA_INDIRIZZO);
+                    String cap = getItemXml(role, TAG_ANAGRAFICA_CAP);
+                    String[] temp = {codice, paese, ruolo, nome, sesso, data, luogo, codfis,
+                                    resid, indirizzo, cap};
                     array.add(temp);
-                    tmArbitri.put(arbitro, residenza);
+                    Anagrafica a = new Anagrafica(nome, luogo, data, codfis, resid, indirizzo, 
+                            cap, ruolo, sesso, paese);
+                    tmAnagrafica.put(codice, a);
                 }                
             }
         }
         return array;
     }
+
+    private String getItemXml(Element elem, String tag){
+        String value = "";
+        try{
+            value = elem.getChild(tag).getText();
+        } catch (NullPointerException npe){}
+        return value;
+    }
+
     /**
      *
      * @return
      * @throws JDOMException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
-	ArrayList<String[]> initializeReaderCarta(File xml) throws JDOMException, IOException{
+    ArrayList<String[]> initializeReaderCarta(File xml) throws JDOMException, IOException{
         ArrayList<String[]> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
@@ -198,8 +233,7 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
-	ArrayList<String[]> initializeReaderEccezioni(File xml) throws JDOMException, IOException,
+    ArrayList<String[]> initializeReaderEccezioni(File xml) throws JDOMException, IOException,
             ParseException{
         ArrayList<String[]> array = null;
         if (xml.exists()){
@@ -229,8 +263,8 @@ class Xml {
      *
      * @return
      */
-    TreeMap<String, String> getMapArbitri() {
-        return tmArbitri;
+    TreeMap<String, Anagrafica> getMapAnagrafica() {
+        return tmAnagrafica;
     }
     /**
      *

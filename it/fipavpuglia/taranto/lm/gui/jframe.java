@@ -24,13 +24,13 @@ import org.lp.myUtils.lang.Lang;
  */
 @SuppressWarnings("serial")
 public class jframe extends JFrame implements WindowListener, MyFrameEventListener{
-    private final Dimension SCREENSIZE = new Dimension(800, 600);
-    private final Dimension TABBEDSIZE = new Dimension(800, 440);
-    private final Dimension TEXTPANESIZE = new Dimension(800, 110);
+    private final Dimension SCREENSIZE = new Dimension(1024, 600);
+    private final Dimension TABBEDSIZE = new Dimension(1024, 440);
+    private final Dimension TEXTPANESIZE = new Dimension(1024, 110);
     private Mediator proxy = Mediator.getInstance();
     private JTabbedPane jtabbedpane;
     private textpaneLog jtpLog;
-    private paneArbitri jpArbitri;
+    private paneAnagrafica jpArbitri;
     private paneCarta jpCarta;
     private paneEccezioni jpEccezioni;
 
@@ -55,7 +55,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private void initTabPanel(){
         jtabbedpane = new JTabbedPane();
         jtabbedpane.setPreferredSize(TABBEDSIZE);
-        jpArbitri = paneArbitri.getPanel();
+        jpArbitri = paneAnagrafica.getPanel();
         jtabbedpane.addTab("Arbitri", jpArbitri);
         jpEccezioni = paneEccezioni.getPanel();
         jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
@@ -132,7 +132,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jmenuBar.add(jmenuTest);
         this.setJMenuBar(jmenuBar);
     }
-
+    @Override
     public void objReceived(MyFrameEvent evt) {
         if (evt.getNametable().equals(proxy.getNameTableArbitri()))
             jpArbitri.addRows(evt.getArray());
