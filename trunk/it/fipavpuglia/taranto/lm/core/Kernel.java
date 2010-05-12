@@ -279,26 +279,26 @@ public class Kernel {
         return verify;
     }
 
-    public void saveArbitri(TreeMap<String, Anagrafica> tm) {
+    public void saveAnagrafica(TreeMap<String, Anagrafica> tm) {
         if (tm.size()>0){
             try {
                 Xml save = new Xml();
                 Iterator<String> it = tm.keySet().iterator();
-                save.initializeWriterArbitri();
+                save.initializeWriterAnagrafica();
                 while (it.hasNext()) {
                     String key = it.next();
                     Anagrafica value = tm.get(key);
-                    save.addItemArbitro(key, value);
+                    save.addItemAnagrafica(key, value);
                 }
                 save.writeAnagrafica(XML_ANAGRAFICA);
-                printOk("XML arbitri aggiornato");
+                printOk("XML anagrafica aggiornato");
                 tmArbitri = tm;
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
             }
         } else
-            printAlert("non ho elementi da salvare nell'xml arbitri");
+            printAlert("non ho elementi da salvare nell'xml anagrafica");
     }
 
     public void saveCarta(TreeMap<Carta, String> tm) {

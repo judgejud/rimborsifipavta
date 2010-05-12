@@ -49,6 +49,7 @@ class paneAnagrafica extends paneAbstract{
         Swing.setTableDimensionLockColumn(jtable, 2, 80); //ruolo
         Swing.setTableDimensionLockColumn(jtable, 4, 50); //sesso
         Swing.setTableDimensionLockColumn(jtable, 5, 75); //data nascita
+        Swing.setTableDimensionLockColumn(jtable, 7, 110); //codice fiscale
         Swing.setTableDimensionLockColumn(jtable, 10, 40); //cap
 
         TableColumn col_role = jtable.getColumnModel().getColumn(2);
@@ -57,15 +58,16 @@ class paneAnagrafica extends paneAbstract{
 
         TableColumn col_sex = jtable.getColumnModel().getColumn(4);
         col_sex.setCellEditor(new MyComboBoxEditor(items_sex));
-        col_sex.setCellRenderer(new MyComboBoxRenderer(items_sex));        
+        col_sex.setCellRenderer(new MyComboBoxRenderer(items_sex));
     }
     @Override
     void addRow(){
-        dtm.insertRow(0,new Object[]{null,null, null, null,null,null,null,null,null,null,null});
+        dtm.insertRow(0,new Object[]{null,null, "Arbitro", null,"uomo",null,
+                        null,null,null,null,null});
     }
     @Override
     void save(){
-        proxy.saveArbitri(dtm.getDataVector());
+        proxy.saveAnagrafica(dtm.getDataVector());
     }
 
     class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
