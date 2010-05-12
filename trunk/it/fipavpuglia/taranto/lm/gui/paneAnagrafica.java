@@ -1,9 +1,12 @@
 package it.fipavpuglia.taranto.lm.gui;
 
 import java.awt.Component;
+import java.awt.FontMetrics;
+import java.awt.Insets;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -59,6 +62,10 @@ class paneAnagrafica extends paneAbstract{
         TableColumn col_sex = jtable.getColumnModel().getColumn(4);
         col_sex.setCellEditor(new MyComboBoxEditor(items_sex));
         col_sex.setCellRenderer(new MyComboBoxRenderer(items_sex));
+        //cognome nome
+        jtable.getColumnModel().getColumn(3).setCellRenderer(new JLabelExtendedRenderer());
+        //indirizzo
+        jtable.getColumnModel().getColumn(9).setCellRenderer(new JLabelExtendedRenderer());
     }
     @Override
     void addRow(){
@@ -94,4 +101,26 @@ class paneAnagrafica extends paneAbstract{
             super(new JComboBox(items));
         }
     }
+
+    class JLabelExtendedRenderer extends JLabel implements TableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            //imposta il testo della cella
+            String text = value.toString();
+            setText(text);
+            //imposta il tooltip della cella
+            int availableWidth = table.getColumnModel().getColumn(column).getWidth();
+            availableWidth -= table.getIntercellSpacing().getWidth();
+            Insets borderInsets = getBorder().getBorderInsets(this);
+            availableWidth -= (borderInsets.left + borderInsets.right);
+            FontMetrics fm = getFontMetrics(getFont());
+            if (fm.stringWidth(text) > availableWidth)
+                setToolTipText(text);
+            else
+                setToolTipText(null);
+            this.repaint();
+            return this;
+        }
+    } //end class JLabelRenderer
 }

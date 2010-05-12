@@ -243,10 +243,10 @@ class Mediator {
     }
 
     void testPDF() {
-
+        core.testPDF();
     }
 
     void testXLS() {
-
+        core.testXLS();
     }
 }

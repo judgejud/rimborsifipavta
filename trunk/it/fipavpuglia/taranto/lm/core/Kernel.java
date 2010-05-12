@@ -1,11 +1,13 @@
 package it.fipavpuglia.taranto.lm.core;
 
+import com.itextpdf.text.BadElementException;
 import it.fipavpuglia.taranto.lm.gui.events.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +18,11 @@ import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.lp.myUtils.Util;
+import org.lp.myUtils.lang.Lang;
+
+import com.itextpdf.text.DocumentException;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -25,9 +32,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import org.jdom.JDOMException;
-
-import org.lp.myUtils.Util;
-import org.lp.myUtils.lang.Lang;
 /**
  *
  * @author luca
@@ -374,6 +378,30 @@ public class Kernel {
         } else
             printAlert("Non posso fare il backup degli xml in quanto non esiste nessun xml");
     }
+
+    public void testXLS() {
+
+    }
+
+    public void testPDF() {
+        try {
+            Pdf pdf = new Pdf("test", "test", false);
+            pdf.creaIntestazione();
+            pdf.close();
+        } catch (BadElementException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (MalformedURLException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (DocumentException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
     
     public Date convertStringToDate(String _date) throws ParseException{
         return sdf.parse(_date);
@@ -418,18 +446,16 @@ public class Kernel {
     private void printOk(String print){
         fireNewTextPaneEvent(print, MyTextPaneEvent.OK);
     }
-    // This methods allows classes to register for MyEvents
-    @SuppressWarnings("unchecked")
-	public synchronized void addMyTextPaneEventListener(MyTextPaneEventListener listener) {
+    // This methods allows classes to register for MyEvents    
+    public synchronized void addMyTextPaneEventListener(MyTextPaneEventListener listener) {
         listenerTextPane.add(listener);
     }
     // This methods allows classes to unregister for MyEvents
     public synchronized void removeMyTextPaneEventListener(MyTextPaneEventListener listener) {
         listenerTextPane.remove(listener);
     }
-
-    @SuppressWarnings("unchecked")
-	private synchronized void fireNewTextPaneEvent(String msg, String type) {
+    
+    private synchronized void fireNewTextPaneEvent(String msg, String type) {
         MyTextPaneEvent event = new MyTextPaneEvent(this, msg, type);
         Iterator listeners = listenerTextPane.iterator();
         while(listeners.hasNext() ) {
@@ -438,8 +464,7 @@ public class Kernel {
         }
     }
     // This methods allows classes to register for MyEvents
-    @SuppressWarnings("unchecked")
-	public synchronized void addMyFrameEventListener(MyFrameEventListener listener) {
+    public synchronized void addMyFrameEventListener(MyFrameEventListener listener) {
         listenerFrame.add(listener);
     }
     // This methods allows classes to unregister for MyEvents
@@ -447,8 +472,7 @@ public class Kernel {
         listenerFrame.remove(listener);
     }
 
-    @SuppressWarnings("unchecked")
-	private synchronized void fireNewFrameEvent(String _name, ArrayList<String[]> _array) {
+    private synchronized void fireNewFrameEvent(String _name, ArrayList<String[]> _array) {
         MyFrameEvent event = new MyFrameEvent(this, _name, _array);
         Iterator listeners = listenerFrame.iterator();
         while(listeners.hasNext()) {
