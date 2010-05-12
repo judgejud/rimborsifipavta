@@ -30,7 +30,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private Mediator proxy = Mediator.getInstance();
     private JTabbedPane jtabbedpane;
     private textpaneLog jtpLog;
-    private paneAnagrafica jpArbitri;
+    private paneAnagrafica jpAnagrafica;
     private paneCarta jpCarta;
     private paneEccezioni jpEccezioni;
 
@@ -55,8 +55,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private void initTabPanel(){
         jtabbedpane = new JTabbedPane();
         jtabbedpane.setPreferredSize(TABBEDSIZE);
-        jpArbitri = paneAnagrafica.getPanel();
-        jtabbedpane.addTab("Arbitri", jpArbitri);
+        jpAnagrafica = paneAnagrafica.getPanel();
+        jtabbedpane.addTab("Anagrafica", jpAnagrafica);
         jpEccezioni = paneEccezioni.getPanel();
         jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
@@ -79,6 +79,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         JMenuItem jmnItemExit = new JMenuItem(" Uscita ");
         JMenuItem jmnTestRimborsi = new JMenuItem(" Testa presenza località xls in xml");
         JMenuItem jmnTestArbitri = new JMenuItem(" Testa presenza arbitri xls in xml ");
+        JMenuItem jmnTestPDF = new JMenuItem(" Testa scrittura pdf ");
+        JMenuItem jmnTestXLS = new JMenuItem(" Testa scrittura xls ");
         jmnItem01.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -121,6 +123,18 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
                 proxy.invokeBackupXml(jframe.this);
             }
         });
+        jmnTestPDF.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                proxy.testPDF();
+            }
+        });
+        jmnTestXLS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                proxy.testXLS();
+            }
+        });
         jmenuWork.add(jmnItem01);
         jmenuWork.add(jmnItemRimborsi);
         jmenuWork.add(jmnItemPulisci);
@@ -128,6 +142,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jmenuWork.add(jmnItemExit);
         jmenuTest.add(jmnTestArbitri);
         jmenuTest.add(jmnTestRimborsi);
+        jmenuTest.add(jmnTestPDF);
+        jmenuTest.add(jmnTestXLS);
         jmenuBar.add(jmenuWork);
         jmenuBar.add(jmenuTest);
         this.setJMenuBar(jmenuBar);
@@ -135,7 +151,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     @Override
     public void objReceived(MyFrameEvent evt) {
         if (evt.getNametable().equals(proxy.getNameTableArbitri()))
-            jpArbitri.addRows(evt.getArray());
+            jpAnagrafica.addRows(evt.getArray());
         else if (evt.getNametable().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArray());
         else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))

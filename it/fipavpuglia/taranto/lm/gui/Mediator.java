@@ -102,7 +102,7 @@ class Mediator {
         core.loadXML();
     }
 
-    void saveArbitri(Vector dataVector) {
+    void saveAnagrafica(Vector dataVector) {
         TreeMap<String, Anagrafica> tm = new TreeMap<String, Anagrafica>();
         boolean _break = false;
         String code="";
@@ -132,7 +132,7 @@ class Mediator {
             }
         }
         if (!_break)
-            core.saveArbitri(tm);
+            core.saveAnagrafica(tm);
     }
 
     void saveEccezioni(Vector dataVector) {
@@ -240,5 +240,13 @@ class Mediator {
             MyTextPaneEventListener myel = (MyTextPaneEventListener)listeners.next();
             myel.objReceived(event);
         }
-    }    
+    }
+
+    void testPDF() {
+
+    }
+
+    void testXLS() {
+
+    }
 }

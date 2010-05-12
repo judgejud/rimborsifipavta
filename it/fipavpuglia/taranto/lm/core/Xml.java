@@ -31,10 +31,10 @@ class Xml {
     private final String TAG_ANAGRAFICA_PAESE = "PAESE";
     private final String TAG_ANAGRAFICA_NOME = "NOME";
     private final String TAG_ANAGRAFICA_RUOLO = "RUOLO";
-    private final String TAG_ANAGRAFICA_DATAN = "DATA NASCITA";
-    private final String TAG_ANAGRAFICA_LUOGON = "LUOGO NASCITA";
+    private final String TAG_ANAGRAFICA_DATAN = "DATA_NASCITA";
+    private final String TAG_ANAGRAFICA_LUOGON = "LUOGO_NASCITA";
     private final String TAG_ANAGRAFICA_SESSO = "SESSO";
-    private final String TAG_ANAGRAFICA_CODFIS = "CODICE FISCALE";
+    private final String TAG_ANAGRAFICA_CODFIS = "CODICE_FISCALE";
     private final String TAG_ANAGRAFICA_CITTA = "RESIDENZA";
     private final String TAG_ANAGRAFICA_INDIRIZZO = "INDIRIZZO";
     private final String TAG_ANAGRAFICA_CAP = "CAP";
@@ -56,7 +56,7 @@ class Xml {
         jdomCarta = new Document(root);
     }
     /**inizializza il documento Arbitri per la scrittura */
-    void initializeWriterArbitri(){
+    void initializeWriterAnagrafica(){
         root = new Element(TAG_ROOT);
         jdomAnagrafica = new Document(root);
     }
@@ -89,7 +89,7 @@ class Xml {
      * @param key
      * @param value
      */
-    void addItemArbitro(String key, Anagrafica value) {
+    void addItemAnagrafica(String key, Anagrafica value) {
         Element item = new Element(TAG_ITEM);
         Element codice = new Element(TAG_ANAGRAFICA_CODICE);
         codice.setText(key);
@@ -99,10 +99,31 @@ class Xml {
         ruolo.setText(value.getRole());
         Element nome = new Element(TAG_ANAGRAFICA_NOME);
         nome.setText(value.getSurname_name());
+        Element data = new Element(TAG_ANAGRAFICA_DATAN);
+        data.setText(value.getDate_born());
+        Element luogo = new Element(TAG_ANAGRAFICA_LUOGON);
+        luogo.setText(value.getCity_born());
+        Element sesso = new Element(TAG_ANAGRAFICA_SESSO);
+        sesso.setText(value.getSex());
+        Element codfis = new Element(TAG_ANAGRAFICA_CODFIS);
+        codfis.setText(value.getFiscal_code());
+        Element città = new Element(TAG_ANAGRAFICA_CITTA);
+        città.setText(value.getCity_residence());
+        Element indirizzo = new Element(TAG_ANAGRAFICA_INDIRIZZO);
+        indirizzo.setText(value.getAddress());
+        Element cap = new Element(TAG_ANAGRAFICA_CAP);
+        cap.setText(value.getCap());
         item.addContent(codice);
         item.addContent(paese);
         item.addContent(nome);
         item.addContent(ruolo);
+        item.addContent(data);
+        item.addContent(luogo);
+        item.addContent(sesso);
+        item.addContent(codfis);
+        item.addContent(città);
+        item.addContent(indirizzo);
+        item.addContent(cap);
         root.addContent(item);
     }
 
