@@ -4,6 +4,8 @@ import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
@@ -19,6 +21,10 @@ import java.net.MalformedURLException;
 
 public class Pdf {
     private Document documento;
+    private Font arial10n = FontFactory.getFont("Arial", 10, Font.NORMAL);
+    private Font arial10b = FontFactory.getFont("Arial", 10, Font.BOLD);
+    private Font arial11b = FontFactory.getFont("Arial", 11, Font.BOLD);
+    private PdfPTable tableIntestazione = null;
     /**Crea il pdf
      * 
      * @param tNomeFile  nome file
@@ -31,7 +37,7 @@ public class Pdf {
         if (verticale)
             documento = new Document(PageSize.A4,5,5,5,5);
         else
-            documento = new Document(PageSize.A4.rotate(),0,0,0,0);
+            documento = new Document(PageSize.A4.rotate(),10,10,10,10);
         String nomepdf = tNomeFile + ".pdf";
         File f = new File(nomepdf);
         if (f.exists())
@@ -44,34 +50,157 @@ public class Pdf {
     
     void creaIntestazione() throws DocumentException, BadElementException,
             MalformedURLException, IOException{
-        PdfPTable tabella = new PdfPTable(8);
-        tabella.setHorizontalAlignment(Element.ALIGN_CENTER);
-        tabella.setWidthPercentage(95);
-        Image image = Image.getInstance("logo_fipavtaranto.png");
-        PdfPCell cImage = new PdfPCell(image);
-        cImage.setRowspan(3);
-        tabella.addCell(cImage);
-        Phrase modulo = new Phrase("MODULO LIQUIDAZIONE PREMI/COMPENSI IDENNITA' DI TRASFERTA/RIMBORSI FORFETTARI DI SPESA");
-        PdfPCell ctext = new PdfPCell(modulo);
-        ctext.setColspan(6);
-        tabella.addCell(ctext);
-        tabella.addCell(cImage);
-        ctext.setPhrase(null);
-        tabella.addCell(ctext);
-        Phrase legge = new Phrase("L.342/2000 ART. 37 COMMA 1, LETT. C) e D) D.P.R. 22/12/86 N. 917 ART. 81, COMMA 1 LETT. M) E ART. 83 COMMA 2");
-        ctext.setPhrase(legge);
-        tabella.addCell(ctext);
-        documento.add(tabella);
+        if (tableIntestazione==null){
+            float[] colsWidth = {1f, 10f, 0.9f};
+            tableIntestazione = new PdfPTable(colsWidth);
+            tableIntestazione.setWidthPercentage(100);
+            Image logosx = Image.getInstance("logosx.jpg");
+            PdfPCell cImage = new PdfPCell(logosx);
+            cImage.setRowspan(3);
+            cImage.setBorder(0);
+            tableIntestazione.addCell(cImage);
+            Phrase modulo = new Phrase("MODULO LIQUIDAZIONE PREMI/COMPENSI IDENNITA' DI " +
+                    "TRASFERTA/RIMBORSI FORFETTARI DI SPESA",arial11b);
+            PdfPCell ctext = new PdfPCell(modulo);
+            ctext.setHorizontalAlignment(Element.ALIGN_CENTER);
+            ctext.setBorder(0);
+            tableIntestazione.addCell(ctext);
+            Image logodx = Image.getInstance("logodx.jpg");
+            cImage = new PdfPCell(logodx);
+            cImage.setRowspan(3);
+            cImage.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            tableIntestazione.addCell(cImage);
+            ctext.setPhrase(new Phrase());
+            tableIntestazione.addCell(ctext);
+            Phrase legge = new Phrase("L.342/2000 ART. 37 COMMA 1, LETT. C) e D) D.P.R. 22/12/86 " +
+                    "N. 917 ART. 81, COMMA 1 LETT. M) E ART. 83 COMMA 2", arial10n);
+            ctext.setPhrase(legge);
+            tableIntestazione.addCell(ctext);
+        }
+        documento.add(tableIntestazione);
     }
     
-    void printAnagrafica() throws FileNotFoundException, DocumentException{        
-        PdfPTable tabella = new PdfPTable(6);
-        
+    void printAnagrafica(Anagrafica ana, String periodo) throws FileNotFoundException,
+            DocumentException{
+        float[] colsWidth = {0.8f, 2f, 0.5f, 2f, 0.2f, 1f, 1f, 2f};
+        PdfPTable tabella = new PdfPTable(colsWidth);
+        tabella.setWidthPercentage(100);
+        Phrase text;
+        if (ana.getSex().equalsIgnoreCase("uomo"))
+            text = new Phrase("Il Sottoscritto", arial10n);
+        else
+            text = new Phrase("La Sottoscritta", arial10n);
+        PdfPCell cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        PdfPCell cellAnag = new PdfPCell(new Phrase(ana.getSurname_name(), arial10b));
+        cellAnag.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellAnag.setBorder(0);
+        tabella.addCell(cellAnag);
+        if (ana.getSex().equalsIgnoreCase("uomo"))
+            text = new Phrase("Nato a", arial10n);
+        else
+            text = new Phrase("Nata a", arial10n);
+        cellText.setPhrase(text);
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(ana.getCity_born(), arial10b));
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("il", arial10n));
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(ana.getDate_born(), arial10b));
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("Cod. Fiscale", arial10n));
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(ana.getFiscal_code(), arial10b));
+        tabella.addCell(cellAnag);
+        documento.add(tabella);
+
+        float[] colsWidth2 = {0.8f, 2f, 0.5f, 3f, 0.5f, 1f};
+        tabella = new PdfPTable(colsWidth2);
+        tabella.setWidthPercentage(100);
+        cellText = new PdfPCell(new Phrase("Residente a", arial10n));
+        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        cellAnag = new PdfPCell(new Phrase(ana.getCity_residence(), arial10b));
+        cellAnag.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellAnag.setBorder(0);
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("Indirizzo", arial10n));
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(ana.getAddress(), arial10b));
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("C.A.P.", arial10n));
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(ana.getCap(), arial10b));
+        tabella.addCell(cellAnag);
+        documento.add(tabella);
+
+        float[] colsWidth3 = {5.5f, 1.25f, 1.2f, 1.5f, 3.5f};
+        tabella = new PdfPTable(colsWidth3);
+        tabella.setWidthPercentage(100);
+        cellText = new PdfPCell(new Phrase("chiede che gli siano liquidate le " +
+                "seguenti competenze relative all'incarico di", arial10n));
+        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        cellAnag = new PdfPCell(new Phrase(ana.getRole(), arial10b));
+        cellAnag.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellAnag.setBorder(0);
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("per il periodo di", arial10n));
+        tabella.addCell(cellText);
+        cellAnag.setPhrase(new Phrase(periodo, arial10b));
+        tabella.addCell(cellAnag);
+        cellText.setPhrase(new Phrase("in occasione delle sotto elencate prestazioni",
+                arial10n));
+        tabella.addCell(cellText);
+        documento.add(tabella);
     }
     
     void printPartite() throws FileNotFoundException, DocumentException{
         PdfPTable tabella = new PdfPTable(10);
+        tabella.setWidthPercentage(100);
+        PdfPCell cellText = new PdfPCell(new Phrase("N°", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Data", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Motivo della prestazione o n° di gara/designazione",
+                arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Località", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Km", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        //TODO: sistemare il 0,25
+        cellText = new PdfPCell(new Phrase("Rimborso auto € 0,25 a Km", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Rimb spese documentate es. autostrada/treno",
+                arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Rimb spese non document. es. spediz. Referto",
+                arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Rimb. forfettario indennità trasferta " +
+                "art.37 l. 342/2000", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("Totale", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabella.addCell(cellText);
+
         
+
+        documento.add(tabella);
     }
 
     void close(){

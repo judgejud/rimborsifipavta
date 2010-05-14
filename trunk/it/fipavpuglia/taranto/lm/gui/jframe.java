@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
@@ -61,6 +62,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
         jtabbedpane.addTab("Carta Polimetrica", jpCarta);
+        jtabbedpane.addTab("Designazioni", new JPanel());
+        jtabbedpane.addTab("Opzioni", new JPanel());
         this.add(jtabbedpane, BorderLayout.CENTER);
         proxy.setFrameListener(this);
     }
