@@ -50,7 +50,7 @@ public class Kernel {
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
 
-    private TreeMap<String, Anagrafica> tmArbitri;
+    private TreeMap<String, Anagrafica> tmAnagrafica;
     private TreeMap<Carta, String> tmCarta;
     private TreeMap<String, TreeSet<Date>> tmEccezioni;
     /**Costruttore privato*/
@@ -68,7 +68,7 @@ public class Kernel {
         Xml temp = new Xml();
         try {
             fireNewFrameEvent(TABLE_ARBITRI,temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
-            tmArbitri = temp.getMapAnagrafica();
+            tmAnagrafica = temp.getMapAnagrafica();
             fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
             fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
@@ -148,7 +148,7 @@ public class Kernel {
                 Sheet sheet = workBook.getSheetAt(i);
                 String arbitro = sheet.getSheetName().toUpperCase();
                 String residenza = null;
-                if (!tmArbitri.containsKey(arbitro)){
+                if (!tmAnagrafica.containsKey(arbitro)){
                     test = false;
                     residenza = sheet.getRow(5).getCell(5).getStringCellValue();
                     printAlert("Arbitro assente nell'xml: " + arbitro + " - " + residenza);
@@ -206,8 +206,8 @@ public class Kernel {
 
     private void analyzeSheet(Sheet sheet) throws NumberFormatException, IOException{
         String arbitro = sheet.getSheetName().toUpperCase();
-        if (tmArbitri.containsKey(arbitro)){
-            String residenza = tmArbitri.get(arbitro).getCity_card();
+        if (tmAnagrafica.containsKey(arbitro)){
+            String residenza = tmAnagrafica.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             Date oldData = new Date(0);
             Iterator<Date> it = null;
@@ -257,8 +257,8 @@ public class Kernel {
     private boolean testSheet(Sheet sheet) {
         String arbitro = sheet.getSheetName().toUpperCase();
         boolean verify = true;
-        if (tmArbitri.containsKey(arbitro)){
-            String residenza = tmArbitri.get(arbitro).getCity_card();
+        if (tmAnagrafica.containsKey(arbitro)){
+            String residenza = tmAnagrafica.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             while (rows.hasNext()){
                 Row row = (Row) rows.next ();
@@ -296,7 +296,7 @@ public class Kernel {
                 }
                 save.writeAnagrafica(XML_ANAGRAFICA);
                 printOk("XML anagrafica aggiornato");
-                tmArbitri = tm;
+                tmAnagrafica = tm;
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
@@ -384,9 +384,13 @@ public class Kernel {
     }
 
     public void testPDF() {
+        Iterator<String> it = tmAnagrafica.keySet().iterator();
         try {
             Pdf pdf = new Pdf("test", "test", false);
             pdf.creaIntestazione();
+            String temp = "01/01/10-07/03/10";
+            pdf.printAnagrafica(tmAnagrafica.get(it.next()),temp);
+            pdf.printPartite();
             pdf.close();
         } catch (BadElementException ex) {
             printError(ex.getMessage());
