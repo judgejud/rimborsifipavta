@@ -34,6 +34,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private paneAnagrafica jpAnagrafica;
     private paneCarta jpCarta;
     private paneEccezioni jpEccezioni;
+    private panePartite jpPartite;
 
     public jframe() {
         super("Gestione Rimborsi FIPAV TA by Mignogna Luca");
@@ -62,7 +63,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
         jtabbedpane.addTab("Carta Polimetrica", jpCarta);
-        jtabbedpane.addTab("Designazioni", new JPanel());
+        jpPartite = panePartite.getPanel();
+        jtabbedpane.addTab("Designazioni", jpPartite);
         jtabbedpane.addTab("Opzioni", new JPanel());
         this.add(jtabbedpane, BorderLayout.CENTER);
         proxy.setFrameListener(this);
@@ -153,7 +155,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     }
     @Override
     public void objReceived(MyFrameEvent evt) {
-        if (evt.getNametable().equals(proxy.getNameTableArbitri()))
+        if (evt.getNametable().equals(proxy.getNameTableAnagrafica()))
             jpAnagrafica.addRows(evt.getArray());
         else if (evt.getNametable().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArray());
