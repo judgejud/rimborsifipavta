@@ -47,7 +47,7 @@ class paneAnagrafica extends paneAbstract{
                 return types[columnIndex];
             }
         };        
-        jtable.setModel(dtm);               
+        jtable.setModel(dtm);
 
         Swing.setTableDimensionLockColumn(jtable, 2, 80); //ruolo
         Swing.setTableDimensionLockColumn(jtable, 4, 50); //sesso

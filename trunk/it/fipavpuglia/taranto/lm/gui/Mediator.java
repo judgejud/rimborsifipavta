@@ -189,7 +189,8 @@ class Mediator {
             else
                 core.saveCarta(tm);
         } catch (NumberFormatException ex) {
-            printAlert("km non valido per la coppia: " + c.getPartenza() + " - " + c.getArrivo());
+            printAlert("km non valido per la coppia: " + c.getPartenza() + " - " +
+                    c.getArrivo());
         }
     }
 
@@ -200,15 +201,15 @@ class Mediator {
             core.testArbitri(new File(name));
     }
 
-    public String getNameTableArbitri(){
-        return core.getTABLE_ARBITRI();
+    String getNameTableAnagrafica(){
+        return core.getTABLE_ANAGRAFICA();
     }
 
-    public String getNameTableEcccezioni(){
+    String getNameTableEcccezioni(){
         return core.getTABLE_ECCEZIONI();
     }
 
-    public String getNameTableCarta(){
+    String getNameTableCarta(){
         return core.getTABLE_CARTA();
     }
 

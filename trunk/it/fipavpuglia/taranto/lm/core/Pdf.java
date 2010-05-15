@@ -55,6 +55,7 @@ public class Pdf {
             tableIntestazione = new PdfPTable(colsWidth);
             tableIntestazione.setWidthPercentage(100);
             Image logosx = Image.getInstance("logosx.jpg");
+            logosx.setCompressionLevel(0);
             PdfPCell cImage = new PdfPCell(logosx);
             cImage.setRowspan(3);
             cImage.setBorder(0);
@@ -66,8 +67,10 @@ public class Pdf {
             ctext.setBorder(0);
             tableIntestazione.addCell(ctext);
             Image logodx = Image.getInstance("logodx.jpg");
+            logosx.setCompressionLevel(9);
             cImage = new PdfPCell(logodx);
             cImage.setRowspan(3);
+            cImage.setBorder(0);
             cImage.setHorizontalAlignment(Element.ALIGN_RIGHT);
             tableIntestazione.addCell(cImage);
             ctext.setPhrase(new Phrase());
@@ -160,42 +163,53 @@ public class Pdf {
     }
     
     void printPartite() throws FileNotFoundException, DocumentException{
-        PdfPTable tabella = new PdfPTable(10);
+        float[] colsWidth = {0.3f, 0.7f, 2f, 1, 0.4f, 1.1f, 1.5f, 1.5f, 1.5f, 1f};
+        PdfPTable tabella = new PdfPTable(colsWidth);
         tabella.setWidthPercentage(100);
-        PdfPCell cellText = new PdfPCell(new Phrase("N°", arial10b));
+        PdfPCell cellText = new PdfPCell(new Phrase("\nN°", arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase("\nData", arial10b));
+        cellText.setBorderWidth(1.5f);
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Data", arial10b));
+        cellText = new PdfPCell(new Phrase("Motivo della prestazione \no\n n° di " +
+                "gara/designazione", arial10b));
+        cellText.setBorderWidth(1.5f);
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Motivo della prestazione o n° di gara/designazione",
-                arial10b));
+        cellText = new PdfPCell(new Phrase("\nLocalità", arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Località", arial10b));
+        cellText = new PdfPCell(new Phrase("\nKm", arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
-        tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Km", arial10b));
-        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
         //TODO: sistemare il 0,25
-        cellText = new PdfPCell(new Phrase("Rimborso auto € 0,25 a Km", arial10b));
+        cellText = new PdfPCell(new Phrase("Rimborso auto \n\n€ 0,25 a Km", arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Rimb spese documentate es. autostrada/treno",
+        cellText = new PdfPCell(new Phrase("Rimb. spese documentate \nes. autostrada/treno",
                 arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Rimb spese non document. es. spediz. Referto",
+        cellText = new PdfPCell(new Phrase("Rimb spese non document. \nes. spediz. Referto",
                 arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
         cellText = new PdfPCell(new Phrase("Rimb. forfettario indennità trasferta " +
                 "art.37 l. 342/2000", arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
-        cellText = new PdfPCell(new Phrase("Totale", arial10b));
+        cellText = new PdfPCell(new Phrase("\nTotale", arial10b));
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
 
         

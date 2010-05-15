@@ -1,8 +1,5 @@
 package it.fipavpuglia.taranto.lm.core;
 
-import com.itextpdf.text.BadElementException;
-import it.fipavpuglia.taranto.lm.gui.events.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,9 +15,11 @@ import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import it.fipavpuglia.taranto.lm.gui.events.*;
 import org.lp.myUtils.Util;
 import org.lp.myUtils.lang.Lang;
 
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.DocumentException;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -38,7 +37,8 @@ import org.jdom.JDOMException;
  */
 public class Kernel {    
     private static Kernel core = null;
-    private final String TABLE_ARBITRI="Arbitri";
+    private final String TABLE_ANAGRAFICA="Anagrafica";
+    private final String TABLE_DESIGNAZIONI="Designazioni";
     private final String TABLE_CARTA="Carta";
     private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
@@ -67,8 +67,9 @@ public class Kernel {
     public void loadXML() {
         Xml temp = new Xml();
         try {
-            fireNewFrameEvent(TABLE_ARBITRI,temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
+            fireNewFrameEvent(TABLE_ANAGRAFICA,temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
             tmAnagrafica = temp.getMapAnagrafica();
+            tmAnagrafica.keySet().toArray();
             fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
             fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
@@ -427,8 +428,8 @@ public class Kernel {
         return curDir;
     }
 
-    public String getTABLE_ARBITRI() {
-        return TABLE_ARBITRI;
+    public String getTABLE_ANAGRAFICA() {
+        return TABLE_ANAGRAFICA;
     }
 
     public String getTABLE_CARTA() {
