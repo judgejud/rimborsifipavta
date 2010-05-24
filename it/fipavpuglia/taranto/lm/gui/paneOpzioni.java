@@ -1,5 +1,6 @@
 package it.fipavpuglia.taranto.lm.gui;
 
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -43,6 +44,11 @@ public class paneOpzioni extends paneAbstract{
         dtm.addRow(new String[]{"Costo doppia partita", null});
         dtm.addRow(new String[]{"Costo rimborso referto", null});
         jtable.setModel(dtm);
+    }
+
+    void setTableValues(ArrayList<Float> af){
+        for (int i=0; i<af.size(); i++)
+            dtm.setValueAt(af.get(i), i, 1);
     }
 
     @Override

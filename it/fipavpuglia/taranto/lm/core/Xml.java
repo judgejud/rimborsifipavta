@@ -309,6 +309,25 @@ class Xml {
         }
         return array;
     }
+
+    ArrayList<Float> initializeReaderOpzioni(File xml) throws JDOMException, IOException{
+        ArrayList<Float> array = null;
+        if (xml.exists()){
+            //Creo un SAXBuilder e con esso costruisco un document
+            jdomOptions = new SAXBuilder().build(xml);
+            int size = jdomOptions.getRootElement().getChildren().size();
+            if (size>0){
+                array = new ArrayList<Float>();
+                Iterator iterator = jdomOptions.getRootElement().getChildren().iterator();
+                Element role = (Element)iterator.next();
+                array.add(Float.valueOf(role.getChild(TAG_OPTION_KM).getText()));
+                array.add(Float.valueOf(role.getChild(TAG_OPTION_SINGLE).getText()));
+                array.add(Float.valueOf(role.getChild(TAG_OPTION_DUAL).getText()));
+                array.add(Float.valueOf(role.getChild(TAG_OPTION_REFERT).getText()));
+            }
+        }
+        return array;
+    }
     /**
      *
      * @return

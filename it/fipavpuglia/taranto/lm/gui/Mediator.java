@@ -232,6 +232,10 @@ class Mediator {
         return core.getTABLE_CARTA();
     }
 
+    String getNameTableOptions(){
+        return core.getTABLE_OPTIONS();
+    }
+
     private void printAlert(String print){
         fireNewTextPaneEvent(print, MyTextPaneEvent.ALERT);
     }
