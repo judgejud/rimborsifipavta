@@ -24,8 +24,8 @@ class paneEccezioni extends paneAbstract{
         if (jpanel==null)
             jpanel = new paneEccezioni();
         return jpanel;
-    }
-    
+    }    
+    @Override
     void initTableModel(){
         String[] columnNames = {"Arbitro", "Data"};
         dtm = new DefaultTableModel(null, columnNames) {
@@ -37,13 +37,13 @@ class paneEccezioni extends paneAbstract{
         };
         jtable.setModel(dtm);
     }    
-
+    @Override
     void addRow(){
         dtm.insertRow(0,new Object[]{null,null});
     }
-
+    @Override
     void save(){
-        proxy.saveEccezioni(dtm.getDataVector());
+        //proxy.saveEccezioni(dtm.getDataVector());
     }
 
     private void addButton() {

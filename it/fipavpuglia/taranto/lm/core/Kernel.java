@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import it.fipavpuglia.taranto.lm.gui.events.*;
+
 import org.lp.myUtils.Util;
 import org.lp.myUtils.lang.Lang;
 
@@ -40,12 +41,14 @@ public class Kernel {
     private final String TABLE_ANAGRAFICA="Anagrafica";
     private final String TABLE_DESIGNAZIONI="Designazioni";
     private final String TABLE_CARTA="Carta";
-    private final String TABLE_ECCEZIONI="Eccezioni";
+    private final String TABLE_OPZIONI="Opzioni";
+    //private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
     private final File XML_ANAGRAFICA = new File("anagrafica.xml");
-    private final File XML_ECCEZIONI = new File("eccezioni.xml");
+    //private final File XML_ECCEZIONI = new File("eccezioni.xml");
+    private final File XML_OPZIONI = new File("opzioni.xml");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-
+    //private float costoKM, costoSingolaP, costoDoppiaP, costoReferto;
     private String curDir;
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
@@ -53,6 +56,7 @@ public class Kernel {
     private TreeMap<String, Anagrafica> tmAnagrafica;
     private TreeMap<Carta, String> tmCarta;
     private TreeMap<String, TreeSet<Date>> tmEccezioni;
+
     /**Costruttore privato*/
     private Kernel(){
         curDir = Lang.getFileUserDir().toURI().getPath();
@@ -72,18 +76,15 @@ public class Kernel {
             tmAnagrafica.keySet().toArray();
             fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
-            fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
-            tmEccezioni = temp.getMapEccezioni();
+            //fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
+            //tmEccezioni = temp.getMapEccezioni();
         } catch (JDOMException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
         } catch (IOException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();        
-        } catch (ParseException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        }
+        } 
     }    
 
     public void createNewPolymetric(File file) {
@@ -327,7 +328,7 @@ public class Kernel {
         } else
             printAlert("non ho elementi da salvare nell'xml Carta polimetrica");
     }
-    
+/*
     public void saveEccezioni(TreeMap<String, TreeSet<Date>> tm) {
         if (tm.size()>0){
             try {
@@ -356,15 +357,17 @@ public class Kernel {
             tmEccezioni = null;
         }
     }
-
+*/
     public void backupXml(String backup) {
         ArrayList<File> files = new ArrayList<File>();
         if (XML_ANAGRAFICA.exists())
             files.add(XML_ANAGRAFICA);
         if (XML_CARTA.exists())
             files.add(XML_CARTA);
-        if (XML_ECCEZIONI.exists())
-            files.add(XML_ECCEZIONI);
+        //if (XML_ECCEZIONI.exists())
+            //files.add(XML_ECCEZIONI);
+        if (XML_OPZIONI.exists())
+            files.add(XML_OPZIONI);
         if (files.size()>0){
             if (!backup.substring(backup.length()-4).toLowerCase().equalsIgnoreCase(".zip"))
                 backup += ".zip";
@@ -378,6 +381,18 @@ public class Kernel {
             }
         } else
             printAlert("Non posso fare il backup degli xml in quanto non esiste nessun xml");
+    }
+
+    public void saveOptions(float[] values){
+        Xml save = new Xml();
+        save.initializeWriterOptions();
+        save.addItemOption(values);
+        try {
+            save.writeOpzioni(XML_OPZIONI);
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     public void testXLS() {
@@ -436,10 +451,14 @@ public class Kernel {
         return TABLE_CARTA;
     }
 
+    public String getTABLE_DESIGNAZIONI() {
+        return TABLE_DESIGNAZIONI;
+    }
+    /*
     public String getTABLE_ECCEZIONI() {
         return TABLE_ECCEZIONI;
     }
-
+    */
     private void printAlert(String print){
         fireNewTextPaneEvent(print, MyTextPaneEvent.ALERT);
     }

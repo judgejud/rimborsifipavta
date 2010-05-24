@@ -41,7 +41,7 @@ class paneAnagrafica extends paneAbstract{
         dtm = new DefaultTableModel(null, columnNames) {
             Class[] types = new Class[]{String.class, String.class, String.class, String.class,
                             String.class, String.class, String.class, String.class, String.class,
-                            String.class, String.class};
+                            String.class, Integer.class};
             @Override
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
