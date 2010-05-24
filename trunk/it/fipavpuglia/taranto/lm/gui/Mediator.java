@@ -8,15 +8,12 @@ import it.fipavpuglia.taranto.lm.gui.events.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -123,7 +120,7 @@ class Mediator {
                 String codice_fiscale = (String)temp.elementAt(7);
                 String residenza_città = (String)temp.elementAt(8);
                 String indirizzo = (String)temp.elementAt(9);
-                String cap = (String) temp.elementAt(10);
+                String cap = String.valueOf(temp.elementAt(10));
                 
                 Anagrafica a = new Anagrafica(nome, luogo_nascita, data_nascita, codice_fiscale,
                         residenza_città, indirizzo, cap, ruolo, sesso, residenza_carta);
@@ -134,7 +131,7 @@ class Mediator {
         if (!_break)
             core.saveAnagrafica(tm);
     }
-
+/*
     void saveEccezioni(Vector dataVector) {
         String arbitro = null;
         String _date = null;
@@ -163,7 +160,7 @@ class Mediator {
                     + arbitro + " " + _date);
         }
     }
-
+*/
     void saveCarta(Vector dataVector) {
         Carta c = null;
         try {
@@ -178,7 +175,7 @@ class Mediator {
                     _break=true;
                     break;
                 } else {
-                    String km = (String) temp.elementAt(2);
+                    String km = String.valueOf(temp.elementAt(2));
                     Integer.parseInt(km);
                     tm.put(c, km);
                 }
@@ -201,14 +198,36 @@ class Mediator {
             core.testArbitri(new File(name));
     }
 
+    void testPDF() {
+        core.testPDF();
+    }
+
+    void testXLS() {
+        core.testXLS();
+    }
+
+    void saveOption(Vector dataVector) {
+        float[] values = new float[4];        
+        Vector temp = null;
+        try{
+            for (int i=0; i<dataVector.size(); i++){
+                temp = (Vector)dataVector.elementAt(i);
+                values[i] = Float.valueOf(temp.elementAt(1).toString()).floatValue();
+            }
+            core.saveOptions(values);
+        } catch (NullPointerException e){
+            printAlert(temp.elementAt(0).toString() + ": immettere un valore del tipo 0.0");
+        }
+    }
+
     String getNameTableAnagrafica(){
         return core.getTABLE_ANAGRAFICA();
     }
-
+    /*
     String getNameTableEcccezioni(){
         return core.getTABLE_ECCEZIONI();
     }
-
+    */
     String getNameTableCarta(){
         return core.getTABLE_CARTA();
     }
@@ -241,13 +260,5 @@ class Mediator {
             MyTextPaneEventListener myel = (MyTextPaneEventListener)listeners.next();
             myel.objReceived(event);
         }
-    }
-
-    void testPDF() {
-        core.testPDF();
-    }
-
-    void testXLS() {
-        core.testXLS();
     }
 }

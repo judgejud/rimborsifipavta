@@ -1,5 +1,8 @@
 package it.fipavpuglia.taranto.lm.gui;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 import org.lp.myUtils.Swing;
 
@@ -10,12 +13,13 @@ import org.lp.myUtils.Swing;
 public class panePartite extends paneAbstract{
 
     private static panePartite jpanel;
-    private final String[] columnNames = {"Data", "Designazione", "Località", "Uso Macchina",
-        "Spese documentate", "Rimborso referto", "Rimborso altre spese"};
+    private final String[] columnNames = {"Data", "Designazione", "Località", "Concentramento",
+            "Uso Macchina", "Spese documentate", "Rimborso referto", "Rimborso altre spese"};
 
     private panePartite(){
         super();
         initTableModel();
+        initPane();
         setVisible(true);
     }
 
@@ -25,11 +29,19 @@ public class panePartite extends paneAbstract{
         return jpanel;
     }
 
+    private void initPane() {
+        jpb.add(new JLabel("Tabella Arbitro"));
+        JComboBox jcbArbitri = new JComboBox();
+        jpb.add(jcbArbitri);
+        JButton jbSelect = new JButton(" Seleziona ");
+        jbSelect.setToolTipText("Seleziona arbitro");
+        jpb.add(jbSelect);
+    }
     @Override
     void initTableModel() {
         dtm = new DefaultTableModel(null, columnNames) {
             Class[] types = new Class[]{String.class, String.class, String.class, Boolean.class, 
-                String.class, Boolean.class, String.class};
+                Boolean.class, String.class, Boolean.class, String.class};
             @Override
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
@@ -38,11 +50,11 @@ public class panePartite extends paneAbstract{
         jtable.setModel(dtm);
 
         Swing.setTableDimensionLockColumn(jtable, 0, 80);
-        Swing.setTableDimensionLockColumn(jtable, 3, 90);
-        Swing.setTableDimensionLockColumn(jtable, 4, 120);
-        Swing.setTableDimensionLockColumn(jtable, 5, 110);
-        Swing.setTableDimensionLockColumn(jtable, 6, 130);
-        
+        Swing.setTableDimensionLockColumn(jtable, 3, 100);
+        Swing.setTableDimensionLockColumn(jtable, 4, 90);
+        Swing.setTableDimensionLockColumn(jtable, 5, 120);
+        Swing.setTableDimensionLockColumn(jtable, 6, 110);
+        Swing.setTableDimensionLockColumn(jtable, 7, 130);
     }
 
     @Override
@@ -52,7 +64,7 @@ public class panePartite extends paneAbstract{
 
     @Override
     void addRow() {
-        dtm.insertRow(0,new Object[]{null,null, null, true, null, false , null});
+        dtm.insertRow(dtm.getRowCount(),
+                new Object[]{null,null, null, false, true, "0.00", false , "0.00"});
     }
-
 }

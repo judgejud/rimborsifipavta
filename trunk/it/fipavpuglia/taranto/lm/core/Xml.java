@@ -43,10 +43,13 @@ class Xml {
     private final String TAG_CARTA_KM = "KM";
     private final String TAG_ECCEZIONI_NOME = "NOME";
     private final String TAG_ECCEZIONI_DATA = "DATA";
+    private final String TAG_OPTION_KM = "COSTO_KM";
+    private final String TAG_OPTION_SINGLE = "COSTO_SINGLE";
+    private final String TAG_OPTION_DUAL = "COSTO_DUAL";
+    private final String TAG_OPTION_REFERT = "COSTO_REFERT";
     //VARIABLES PRIVATE
     private Element root;
-    //private org.w3c.dom.Document w3cEccezioni;
-    private org.jdom.Document jdomCarta, jdomAnagrafica, jdomEccezioni;
+    private org.jdom.Document jdomCarta, jdomAnagrafica, jdomEccezioni, jdomOptions;
     private TreeMap<String, Anagrafica> tmAnagrafica = null;
     private TreeMap<Carta, String> tmCarta = null;
     private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
@@ -64,6 +67,11 @@ class Xml {
     void initializeWriterEccezioni(){
         root = new Element(TAG_ROOT);
         jdomEccezioni = new Document(root);
+    }
+    /**inizializza il documento Eccezioni per la scrittura */
+    void initializeWriterOptions() {
+        root = new Element(TAG_ROOT);
+        jdomOptions = new Document(root);
     }
     /**
      *
@@ -137,6 +145,23 @@ class Xml {
         item.addContent(data);
         root.addContent(item);
     }
+
+    void addItemOption(float[] costo) {
+        Element item = new Element(TAG_ITEM);
+        Element km = new Element(TAG_OPTION_KM);
+        km.setText(String.valueOf(costo[0]));
+        Element single = new Element(TAG_OPTION_SINGLE);
+        single.setText(String.valueOf(costo[1]));
+        Element dual = new Element(TAG_OPTION_DUAL);
+        dual.setText(String.valueOf(costo[2]));
+        Element refert = new Element(TAG_OPTION_REFERT);
+        refert.setText(String.valueOf(costo[3]));
+        item.addContent(km);
+        item.addContent(single);
+        item.addContent(dual);
+        item.addContent(refert);
+        root.addContent(item);
+    }
     /**Scrive l'xml carta
      *
      * @throws IOException
@@ -157,6 +182,10 @@ class Xml {
      */
     void writeEccezioni(File xml) throws IOException{
         write().output(jdomEccezioni, new FileOutputStream(xml));
+    }
+
+    void writeOpzioni(File xml) throws IOException{
+        write().output(jdomOptions, new FileOutputStream(xml));
     }
     /**
      *

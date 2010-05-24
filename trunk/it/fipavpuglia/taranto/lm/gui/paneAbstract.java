@@ -21,7 +21,8 @@ abstract class paneAbstract extends JPanel{
     protected DefaultTableModel dtm;
     protected Mediator proxy = Mediator.getInstance();
     protected JPanel jpb;
-    private int pos;
+    protected JButton jbAdd, jbRemove, jbUndo;
+    private int pos=-1;
     private Vector v;
     /**Costruttore protetto, per essere invocato dai figli tramite ereditarietà*/
     protected paneAbstract(){
@@ -34,10 +35,10 @@ abstract class paneAbstract extends JPanel{
         jpb = new JPanel();
         jpb.setSize(new Dimension(800,30));
 
-        JButton jbAdd = new JButton("Aggiungi");
-        JButton jbRemove = new JButton("Rimuovi");
+        jbAdd = new JButton("Aggiungi");
+        jbRemove = new JButton("Rimuovi");
         JButton jbSave = new JButton("Salva");
-        JButton jbUndo = new JButton("Annulla");
+        jbUndo = new JButton("Annulla");
 
         jbAdd.setToolTipText("Aggiungi rigo alla tabella");
         jbRemove.setToolTipText("Rimuove rigo selezionato dalla tabella");

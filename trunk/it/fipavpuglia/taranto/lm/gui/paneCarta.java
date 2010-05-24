@@ -24,7 +24,7 @@ class paneCarta extends paneAbstract{
     void initTableModel(){
         String[] columnNames = {"Paese", "Paese", "Km"};
         dtm = new DefaultTableModel(null, columnNames) {
-            Class[] types = new Class[]{String.class, String.class, String.class};
+            Class[] types = new Class[]{String.class, String.class, Integer.class};
             @Override
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];

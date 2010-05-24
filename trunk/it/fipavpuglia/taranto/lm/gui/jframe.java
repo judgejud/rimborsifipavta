@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
@@ -33,8 +32,9 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private textpaneLog jtpLog;
     private paneAnagrafica jpAnagrafica;
     private paneCarta jpCarta;
-    private paneEccezioni jpEccezioni;
+    //private paneEccezioni jpEccezioni;
     private panePartite jpPartite;
+    private paneOpzioni jpOpzioni;
 
     public jframe() {
         super("Gestione Rimborsi FIPAV TA by Mignogna Luca");
@@ -59,13 +59,14 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.setPreferredSize(TABBEDSIZE);
         jpAnagrafica = paneAnagrafica.getPanel();
         jtabbedpane.addTab("Anagrafica", jpAnagrafica);
-        jpEccezioni = paneEccezioni.getPanel();
-        jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
+        //jpEccezioni = paneEccezioni.getPanel();
+        //jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
         jtabbedpane.addTab("Carta Polimetrica", jpCarta);
         jpPartite = panePartite.getPanel();
         jtabbedpane.addTab("Designazioni", jpPartite);
-        jtabbedpane.addTab("Opzioni", new JPanel());
+        jpOpzioni = paneOpzioni.getPanel();
+        jtabbedpane.addTab("Opzioni", jpOpzioni);
         this.add(jtabbedpane, BorderLayout.CENTER);
         proxy.setFrameListener(this);
     }
@@ -159,8 +160,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
             jpAnagrafica.addRows(evt.getArray());
         else if (evt.getNametable().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArray());
-        else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))
-            jpEccezioni.addRows(evt.getArray());
+        //else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))
+            //jpEccezioni.addRows(evt.getArray());
     }
     @Override
     public void windowOpened(WindowEvent e) {}
