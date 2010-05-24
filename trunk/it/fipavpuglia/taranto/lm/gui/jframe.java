@@ -160,6 +160,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
             jpAnagrafica.addRows(evt.getArray());
         else if (evt.getNametable().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArray());
+        else if (evt.getNametable().equals(proxy.getNameTableOptions()))
+            jpOpzioni.setTableValues(evt.getArrayF());
         //else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))
             //jpEccezioni.addRows(evt.getArray());
     }

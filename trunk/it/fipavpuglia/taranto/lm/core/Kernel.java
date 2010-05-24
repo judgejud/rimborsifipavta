@@ -48,7 +48,7 @@ public class Kernel {
     //private final File XML_ECCEZIONI = new File("eccezioni.xml");
     private final File XML_OPZIONI = new File("opzioni.xml");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-    //private float costoKM, costoSingolaP, costoDoppiaP, costoReferto;
+    private float costoKM, costoSingolaP, costoDoppiaP, costoReferto;
     private String curDir;
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
@@ -76,6 +76,14 @@ public class Kernel {
             tmAnagrafica.keySet().toArray();
             fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
+            ArrayList<Float> opt = temp.initializeReaderOpzioni(XML_OPZIONI);
+            if (opt!=null){
+                costoKM = opt.get(0).floatValue();
+                costoSingolaP = opt.get(1).floatValue();
+                costoDoppiaP = opt.get(2).floatValue();
+                costoReferto = opt.get(3).floatValue();
+                fireNewFrameEvent(opt, TABLE_OPZIONI);
+            }
             //fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
             //tmEccezioni = temp.getMapEccezioni();
         } catch (JDOMException ex) {
@@ -84,8 +92,8 @@ public class Kernel {
         } catch (IOException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();        
-        } 
-    }    
+        }
+    }
 
     public void createNewPolymetric(File file) {
         try {
@@ -384,11 +392,16 @@ public class Kernel {
     }
 
     public void saveOptions(float[] values){
-        Xml save = new Xml();
-        save.initializeWriterOptions();
-        save.addItemOption(values);
+        Xml save = new Xml();        
         try {
+            save.initializeWriterOptions();
+            save.addItemOption(values);
             save.writeOpzioni(XML_OPZIONI);
+            printOk("Opzioni salvate");
+            costoKM = values[0];
+            costoSingolaP = values[1];
+            costoDoppiaP = values[2];
+            costoReferto = values[3];
         } catch (IOException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
@@ -454,6 +467,10 @@ public class Kernel {
     public String getTABLE_DESIGNAZIONI() {
         return TABLE_DESIGNAZIONI;
     }
+
+    public String getTABLE_OPTIONS() {
+        return TABLE_OPZIONI;
+    }
     /*
     public String getTABLE_ECCEZIONI() {
         return TABLE_ECCEZIONI;
@@ -498,6 +515,15 @@ public class Kernel {
 
     private synchronized void fireNewFrameEvent(String _name, ArrayList<String[]> _array) {
         MyFrameEvent event = new MyFrameEvent(this, _name, _array);
+        Iterator listeners = listenerFrame.iterator();
+        while(listeners.hasNext()) {
+            MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
+            myel.objReceived(event);
+        }
+    }
+    
+    private synchronized void fireNewFrameEvent(ArrayList<Float> _array, String _name) {
+        MyFrameEvent event = new MyFrameEvent(this, _array, _name);
         Iterator listeners = listenerFrame.iterator();
         while(listeners.hasNext()) {
             MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
