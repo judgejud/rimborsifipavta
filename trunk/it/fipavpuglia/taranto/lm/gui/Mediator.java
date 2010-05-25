@@ -31,6 +31,7 @@ class Mediator {
     private final FileNameExtensionFilter fnfeZIP =
             new FileNameExtensionFilter("ZIP file", "zip");
     private List listenerTextPane  = new ArrayList();
+    private Object oldArbitro = "";
 
     private Mediator(){}
     /**Restituisce l'istanza corrente del mediator
@@ -196,15 +197,7 @@ class Mediator {
                 fnfeXLS, new File(core.getCurDir()));
         if (name!=null)
             core.testArbitri(new File(name));
-    }
-
-    void testPDF() {
-        core.testPDF();
-    }
-
-    void testXLS() {
-        core.testXLS();
-    }
+    }    
 
     void saveOption(Vector dataVector) {
         float[] values = new float[4];        
@@ -218,6 +211,21 @@ class Mediator {
         } catch (NullPointerException e){
             printAlert(temp.elementAt(0).toString() + ": immettere un valore del tipo 0.0");
         }
+    }
+
+    void invokeNewArbitro(Object selectedItem) {
+        if (!oldArbitro.equals(selectedItem)){
+            oldArbitro = selectedItem;
+            core.changeDesignazioni(selectedItem);
+        }
+    }
+
+    void testPDF() {
+        core.testPDF();
+    }
+
+    void testXLS() {
+        core.testXLS();
     }
 
     String getNameTableAnagrafica(){
@@ -234,6 +242,10 @@ class Mediator {
 
     String getNameTableOptions(){
         return core.getTABLE_OPTIONS();
+    }
+
+    String getNameComboArbitri(){
+        return core.getCOMBO_ARBITRI();
     }
 
     private void printAlert(String print){

@@ -156,12 +156,14 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     }
     @Override
     public void objReceived(MyFrameEvent evt) {
-        if (evt.getNametable().equals(proxy.getNameTableAnagrafica()))
-            jpAnagrafica.addRows(evt.getArray());
-        else if (evt.getNametable().equals(proxy.getNameTableCarta()))
-            jpCarta.addRows(evt.getArray());
-        else if (evt.getNametable().equals(proxy.getNameTableOptions()))
+        if (evt.getNameDest().equals(proxy.getNameTableAnagrafica()))
+            jpAnagrafica.addRows(evt.getArrayS());
+        else if (evt.getNameDest().equals(proxy.getNameTableCarta()))
+            jpCarta.addRows(evt.getArrayS());
+        else if (evt.getNameDest().equals(proxy.getNameTableOptions()))
             jpOpzioni.setTableValues(evt.getArrayF());
+        else if (evt.getNameDest().equals(proxy.getNameComboArbitri()))
+            jpPartite.setComboValues(evt.getArrayO());
         //else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))
             //jpEccezioni.addRows(evt.getArray());
     }

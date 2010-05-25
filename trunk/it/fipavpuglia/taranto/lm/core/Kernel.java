@@ -42,6 +42,7 @@ public class Kernel {
     private final String TABLE_DESIGNAZIONI="Designazioni";
     private final String TABLE_CARTA="Carta";
     private final String TABLE_OPZIONI="Opzioni";
+    private final String COMBO_ARBITRI="Arbitri";
     //private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
     private final File XML_ANAGRAFICA = new File("anagrafica.xml");
@@ -71,10 +72,10 @@ public class Kernel {
     public void loadXML() {
         Xml temp = new Xml();
         try {
-            fireNewFrameEvent(TABLE_ANAGRAFICA,temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
+            fireNewFrameEvent(TABLE_ANAGRAFICA, temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
             tmAnagrafica = temp.getMapAnagrafica();
-            tmAnagrafica.keySet().toArray();
-            fireNewFrameEvent(TABLE_CARTA,temp.initializeReaderCarta(XML_CARTA));
+            fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
+            fireNewFrameEvent(TABLE_CARTA, temp.initializeReaderCarta(XML_CARTA));
             tmCarta = temp.getMapCarta();
             ArrayList<Float> opt = temp.initializeReaderOpzioni(XML_OPZIONI);
             if (opt!=null){
@@ -452,6 +453,10 @@ public class Kernel {
         analyzeRimborsi(file, false);
     }
 
+    public void changeDesignazioni(Object selectedItem) {
+
+    }
+
     public String getCurDir() {
         return curDir;
     }
@@ -470,6 +475,10 @@ public class Kernel {
 
     public String getTABLE_OPTIONS() {
         return TABLE_OPZIONI;
+    }
+
+    public String getCOMBO_ARBITRI(){
+        return COMBO_ARBITRI;
     }
     /*
     public String getTABLE_ECCEZIONI() {
@@ -521,7 +530,16 @@ public class Kernel {
             myel.objReceived(event);
         }
     }
-    
+
+    private synchronized void fireNewFrameEvent(String _name, Object[] _array) {
+        MyFrameEvent event = new MyFrameEvent(this, _name, _array);
+        Iterator listeners = listenerFrame.iterator();
+        while(listeners.hasNext()) {
+            MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
+            myel.objReceived(event);
+        }
+    }
+
     private synchronized void fireNewFrameEvent(ArrayList<Float> _array, String _name) {
         MyFrameEvent event = new MyFrameEvent(this, _array, _name);
         Iterator listeners = listenerFrame.iterator();
