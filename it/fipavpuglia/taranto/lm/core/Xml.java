@@ -3,23 +3,19 @@ package it.fipavpuglia.taranto.lm.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
+//IMPORT JDOM
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
-/**Scrive e legge su/da file xml le regole di destinazione
+/**Scrive e legge su/da file xml le 
  *
  * @author luca
  */
@@ -49,7 +45,8 @@ class Xml {
     private final String TAG_OPTION_REFERT = "COSTO_REFERT";
     //VARIABLES PRIVATE
     private Element root;
-    private org.jdom.Document jdomCarta, jdomAnagrafica, jdomEccezioni, jdomOptions;
+    private Document jdomCarta, jdomAnagrafica, jdomDesignazioni, jdomOptions;
+    //private Document jdomEccezioni;
     private TreeMap<String, Anagrafica> tmAnagrafica = null;
     private TreeMap<Carta, String> tmCarta = null;
     private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
@@ -64,6 +61,7 @@ class Xml {
         jdomAnagrafica = new Document(root);
     }
     /**inizializza il documento Eccezioni per la scrittura */
+    /*
     void initializeWriterEccezioni(){
         root = new Element(TAG_ROOT);
         jdomEccezioni = new Document(root);
@@ -72,7 +70,14 @@ class Xml {
     void initializeWriterOptions() {
         root = new Element(TAG_ROOT);
         jdomOptions = new Document(root);
+    }    
+    /**inizializza il documento Eccezioni per la scrittura */
+    void initializeWriterDesignazioni() {
+        root = new Element(TAG_ROOT);
+        jdomDesignazioni = new Document(root);
     }
+
+
     /**
      *
      * @param _paese1
@@ -134,7 +139,7 @@ class Xml {
         item.addContent(cap);
         root.addContent(item);
     }
-
+    /*
     void addItemEccezione(String key, String value) {
         Element item = new Element(TAG_ITEM);
         Element nome = new Element(TAG_ECCEZIONI_NOME);
@@ -144,7 +149,7 @@ class Xml {
         item.addContent(nome);
         item.addContent(data);
         root.addContent(item);
-    }
+    }*/
 
     void addItemOption(float[] costo) {
         Element item = new Element(TAG_ITEM);
@@ -160,6 +165,17 @@ class Xml {
         item.addContent(single);
         item.addContent(dual);
         item.addContent(refert);
+        root.addContent(item);
+    }
+
+    void addItemDesignazione(String _data, String designazione, String localita,
+            String concentramento, String macchina, String spesedoc, String referto,
+            String spesenondoc) {
+        Element item = new Element(TAG_ITEM);
+        Element data = new Element(TAG_ANAGRAFICA_CODICE);
+        data.setText(_data);
+
+        item.addContent(data);
         root.addContent(item);
     }
     /**Scrive l'xml carta
@@ -180,12 +196,17 @@ class Xml {
      *
      * @throws IOException
      */
+    /*
     void writeEccezioni(File xml) throws IOException{
         write().output(jdomEccezioni, new FileOutputStream(xml));
-    }
+    }*/
 
     void writeOpzioni(File xml) throws IOException{
         write().output(jdomOptions, new FileOutputStream(xml));
+    }
+
+    void writeDesignazioni(File xml) throws IOException{
+        write().output(jdomDesignazioni, new FileOutputStream(xml));
     }
     /**
      *
@@ -283,6 +304,7 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
+    /*
     ArrayList<String[]> initializeReaderEccezioni(File xml) throws JDOMException, IOException,
             ParseException{
         ArrayList<String[]> array = null;
@@ -308,7 +330,7 @@ class Xml {
             }
         }
         return array;
-    }
+    }*/
 
     ArrayList<Float> initializeReaderOpzioni(File xml) throws JDOMException, IOException{
         ArrayList<Float> array = null;

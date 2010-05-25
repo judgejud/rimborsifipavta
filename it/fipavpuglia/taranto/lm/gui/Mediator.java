@@ -220,6 +220,10 @@ class Mediator {
         }
     }
 
+    void saveDesignazioni(Object selectedItem, Vector dataVector) {
+        core.saveDesignazioni(selectedItem, dataVector);
+    }
+
     void testPDF() {
         core.testPDF();
     }

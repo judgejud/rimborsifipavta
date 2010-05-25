@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import it.fipavpuglia.taranto.lm.gui.events.*;
+import java.util.Vector;
 
 import org.lp.myUtils.Util;
 import org.lp.myUtils.lang.Lang;
@@ -43,6 +44,7 @@ public class Kernel {
     private final String TABLE_CARTA="Carta";
     private final String TABLE_OPZIONI="Opzioni";
     private final String COMBO_ARBITRI="Arbitri";
+    private final String DESIGNAZIONI_DIR = "designazioni" + File.separator;
     //private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
     private final File XML_ANAGRAFICA = new File("anagrafica.xml");
@@ -308,6 +310,7 @@ public class Kernel {
                 save.writeAnagrafica(XML_ANAGRAFICA);
                 printOk("XML anagrafica aggiornato");
                 tmAnagrafica = tm;
+                fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
@@ -409,6 +412,36 @@ public class Kernel {
         }
     }
 
+    public void saveDesignazioni(Object name, Vector dataVector) {
+        //TODO
+        Xml save = new Xml();               
+        try {
+            File file = new File(curDir + DESIGNAZIONI_DIR);
+            if (!file.exists())
+                file.mkdir();
+            File xml = new File(file, name.toString()+".xml");
+            save.initializeWriterDesignazioni();
+            for (int i=0; i<dataVector.size(); i++){
+                Vector temp = (Vector)dataVector.elementAt(i);
+                String data = temp.elementAt(0).toString();
+                String designazione = temp.elementAt(1).toString().toUpperCase();
+                String localita = temp.elementAt(2).toString().toUpperCase();
+                String concentramento = temp.elementAt(3).toString();
+                String macchina = temp.elementAt(4).toString();
+                String spesedoc = temp.elementAt(5).toString();
+                String referto = temp.elementAt(6).toString();
+                String spesenondoc = temp.elementAt(7).toString();
+                save.addItemDesignazione(data, designazione, localita, concentramento, macchina,
+                        spesedoc, referto, spesenondoc);
+            }
+            save.writeDesignazioni(xml);
+            printOk(xml.getName() + " salvato");
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public void testXLS() {
 
     }
@@ -454,8 +487,8 @@ public class Kernel {
     }
 
     public void changeDesignazioni(Object selectedItem) {
-
-    }
+        //TODO
+    }    
 
     public String getCurDir() {
         return curDir;
