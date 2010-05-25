@@ -8,31 +8,42 @@ import java.util.EventObject;
  */
 @SuppressWarnings("serial")
 public class MyFrameEvent extends EventObject{
-    private String nametable;
-    private ArrayList<String[]> array;
+    private String nameDest;
+    private ArrayList<String[]> arrayS;
     private ArrayList<Float> arrayF;
+    private Object[] arrayO;
 
     public MyFrameEvent(Object source, String _name, ArrayList<String[]> _array){
         super(source);
-        nametable = _name;
-        array = _array;
+        nameDest = _name;
+        arrayS = _array;
+    }
+
+    public MyFrameEvent(Object source, String _name, Object[] _array){
+        super(source);
+        nameDest = _name;
+        arrayO = _array;
     }
 
     public MyFrameEvent(Object source, ArrayList<Float> _array, String _name){
         super(source);
-        nametable = _name;
+        nameDest = _name;
         arrayF = _array;
     }
 
-    public ArrayList<String[]> getArray() {
-        return array;
+    public ArrayList<String[]> getArrayS() {
+        return arrayS;
     }
 
     public ArrayList<Float> getArrayF() {
         return arrayF;
     }
 
-    public String getNametable() {
-        return nametable;
+    public Object[] getArrayO(){
+        return arrayO;
+    }
+
+    public String getNameDest() {
+        return nameDest;
     }
 }
