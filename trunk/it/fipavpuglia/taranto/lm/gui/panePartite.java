@@ -39,7 +39,8 @@ public class panePartite extends paneAbstract{
         jcbArbitri.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                changeArbitro();
+                if (jcbArbitri.getSelectedIndex()>0)
+                    proxy.invokeNewArbitro(jcbArbitri.getSelectedItem());
             }
         });
         jpb.add(jcbArbitri);        
@@ -64,17 +65,10 @@ public class panePartite extends paneAbstract{
         Swing.setTableDimensionLockColumn(jtable, 7, 130);
     }
 
-    private void changeArbitro() {
-        if (jcbArbitri.getSelectedIndex()>0){
-            proxy.invokeNewArbitro(jcbArbitri.getSelectedItem());
-        }
-    }
-
     @Override
     void save() {
-        if (jcbArbitri.getSelectedIndex()>0 && dtm.getRowCount()>0){
-            
-        }
+        if (jcbArbitri.getSelectedIndex()>0 && dtm.getRowCount()>0)
+            proxy.saveDesignazioni(jcbArbitri.getSelectedItem(), dtm.getDataVector());
     }
 
     @Override
@@ -85,6 +79,8 @@ public class panePartite extends paneAbstract{
     }
 
     void setComboValues(Object[] arrayO) {
+        if (jcbArbitri.getItemCount()>0)
+            jcbArbitri.setModel(null);
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel(arrayO);
         dcbm.insertElementAt(null, 0);
         jcbArbitri.setModel(dcbm);
