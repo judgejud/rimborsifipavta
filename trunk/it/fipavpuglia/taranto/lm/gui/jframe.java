@@ -35,6 +35,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     //private paneEccezioni jpEccezioni;
     private panePartite jpPartite;
     private paneOpzioni jpOpzioni;
+    private paneCalcoli jpCalcoli;
 
     public jframe() {
         super("Gestione Rimborsi FIPAV TA by Mignogna Luca");
@@ -67,6 +68,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.addTab("Designazioni", jpPartite);
         jpOpzioni = paneOpzioni.getPanel();
         jtabbedpane.addTab("Opzioni", jpOpzioni);
+        jpCalcoli = paneCalcoli.getPanel();
+        jtabbedpane.addTab("Calcoli", jpCalcoli);
         this.add(jtabbedpane, BorderLayout.CENTER);
         proxy.setFrameListener(this);
     }

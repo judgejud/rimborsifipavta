@@ -41,8 +41,8 @@ public class panePartite extends paneAbstract{
             public void actionPerformed(ActionEvent e) {
                 if (jcbArbitri.getSelectedIndex()>0){
                     if (dtm.getRowCount()>0)
-                        for (int i=0; i<dtm.getRowCount(); i++)
-                            dtm.removeRow(0);
+                        for (int i=dtm.getRowCount(); i>0; i--)
+                            dtm.removeRow(i-1);
                     proxy.invokeNewArbitro(jcbArbitri.getSelectedItem());
                 }
             }
