@@ -72,20 +72,20 @@ public class Kernel {
     }
 
     public void loadXML() {
-        Xml temp = new Xml();
+        Xml load = new Xml();
         try {
-            fireNewFrameEvent(TABLE_ANAGRAFICA, temp.initializeReaderAnagrafica(XML_ANAGRAFICA));
-            tmAnagrafica = temp.getMapAnagrafica();
+            fireNewFrameEvent(TABLE_ANAGRAFICA, load.initializeReaderAnagrafica(XML_ANAGRAFICA));
+            tmAnagrafica = load.getMapAnagrafica();
             fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
-            fireNewFrameEvent(TABLE_CARTA, temp.initializeReaderCarta(XML_CARTA));
-            tmCarta = temp.getMapCarta();
-            ArrayList<Float> opt = temp.initializeReaderOpzioni(XML_OPZIONI);
+            fireNewFrameEvent(TABLE_CARTA, load.initializeReaderCarta(XML_CARTA));
+            tmCarta = load.getMapCarta();
+            ArrayList<Object> opt = load.initializeReaderOpzioni(XML_OPZIONI);
             if (opt!=null){
-                costoKM = opt.get(0).floatValue();
-                costoSingolaP = opt.get(1).floatValue();
-                costoDoppiaP = opt.get(2).floatValue();
-                costoReferto = opt.get(3).floatValue();
-                fireNewFrameEvent(opt, TABLE_OPZIONI);
+                costoKM = ((Float)opt.get(0)).floatValue();
+                costoSingolaP = ((Float)opt.get(1)).floatValue();
+                costoDoppiaP = ((Float)opt.get(2)).floatValue();
+                costoReferto = ((Float)opt.get(3)).floatValue();
+                fireNewFrameEvent(TABLE_OPZIONI, opt.toArray());
             }
             //fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
             //tmEccezioni = temp.getMapEccezioni();
@@ -413,8 +413,7 @@ public class Kernel {
     }
 
     public void saveDesignazioni(Object name, Vector dataVector) {
-        //TODO
-        Xml save = new Xml();               
+        Xml save = new Xml();
         try {
             File file = new File(curDir + DESIGNAZIONI_DIR);
             if (!file.exists())
@@ -485,10 +484,20 @@ public class Kernel {
     public void writeRimborsi(File file){                   
         analyzeRimborsi(file, false);
     }
-
-    public void changeDesignazioni(Object selectedItem) {
-        //TODO
-    }    
+    
+    public void changeDesignazioni(Object name) {
+        File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
+        Xml load = new Xml();
+        try {
+            fireNewFrameEvent(TABLE_DESIGNAZIONI, load.initializeReaderDesignazioni(file));
+        } catch (JDOMException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
 
     public String getCurDir() {
         return curDir;
@@ -555,7 +564,7 @@ public class Kernel {
         listenerFrame.remove(listener);
     }
 
-    private synchronized void fireNewFrameEvent(String _name, ArrayList<String[]> _array) {
+    private synchronized void fireNewFrameEvent(String _name, ArrayList<Object[]> _array) {
         MyFrameEvent event = new MyFrameEvent(this, _name, _array);
         Iterator listeners = listenerFrame.iterator();
         while(listeners.hasNext()) {
@@ -572,7 +581,7 @@ public class Kernel {
             myel.objReceived(event);
         }
     }
-
+/*
     private synchronized void fireNewFrameEvent(ArrayList<Float> _array, String _name) {
         MyFrameEvent event = new MyFrameEvent(this, _array, _name);
         Iterator listeners = listenerFrame.iterator();
@@ -581,4 +590,5 @@ public class Kernel {
             myel.objReceived(event);
         }
     }
+*/
 }

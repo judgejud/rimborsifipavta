@@ -252,6 +252,10 @@ class Mediator {
         return core.getCOMBO_ARBITRI();
     }
 
+    String getNameTableDesignaz(){
+        return core.getTABLE_DESIGNAZIONI();
+    }
+
     private void printAlert(String print){
         fireNewTextPaneEvent(print, MyTextPaneEvent.ALERT);
     }
