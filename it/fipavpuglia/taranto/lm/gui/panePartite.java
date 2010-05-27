@@ -39,8 +39,12 @@ public class panePartite extends paneAbstract{
         jcbArbitri.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (jcbArbitri.getSelectedIndex()>0)
+                if (jcbArbitri.getSelectedIndex()>0){
+                    if (dtm.getRowCount()>0)
+                        for (int i=0; i<dtm.getRowCount(); i++)
+                            dtm.removeRow(0);
                     proxy.invokeNewArbitro(jcbArbitri.getSelectedItem());
+                }
             }
         });
         jpb.add(jcbArbitri);        
@@ -48,8 +52,8 @@ public class panePartite extends paneAbstract{
     @Override
     void initTableModel() {
         dtm = new DefaultTableModel(null, columnNames) {
-            Class[] types = new Class[]{String.class, String.class, String.class, Boolean.class, 
-                Boolean.class, Float.class, Boolean.class, Float.class};
+            Class[] types = new Class[]{String.class, String.class, String.class,
+                    Boolean.class, Boolean.class, Float.class, Boolean.class, Float.class};
             @Override
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
@@ -75,12 +79,12 @@ public class panePartite extends paneAbstract{
     void addRow() {
         if (jcbArbitri.getSelectedIndex()>0)
             dtm.insertRow(dtm.getRowCount(),
-                new Object[]{null,null, null, false, true, 0.00, false , 0.00});
+                new Object[]{null ,null, null, false, true, 0.00, false , 0.00});
     }
 
     void setComboValues(Object[] arrayO) {
         if (jcbArbitri.getItemCount()>0)
-            jcbArbitri.setModel(null);
+            jcbArbitri.setModel(new DefaultComboBoxModel());
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel(arrayO);
         dcbm.insertElementAt(null, 0);
         jcbArbitri.setModel(dcbm);

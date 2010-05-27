@@ -88,7 +88,7 @@ abstract class paneAbstract extends JPanel{
         }
     }
 
-    void addRows(ArrayList<String[]> al){
+    void addRows(ArrayList<Object[]> al){
         if (al!=null)
             for (int i=0; i<al.size(); i++)
                 dtm.addRow(al.get(i));

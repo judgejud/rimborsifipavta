@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.TreeSet;
 //IMPORT JDOM
 import org.jdom.Document;
 import org.jdom.Element;
@@ -37,19 +35,28 @@ class Xml {
     private final String TAG_CARTA_PAESE1 = "PAESE1";
     private final String TAG_CARTA_PAESE2 = "PAESE2";
     private final String TAG_CARTA_KM = "KM";
-    private final String TAG_ECCEZIONI_NOME = "NOME";
-    private final String TAG_ECCEZIONI_DATA = "DATA";
+    //private final String TAG_ECCEZIONI_NOME = "NOME";
+    //private final String TAG_ECCEZIONI_DATA = "DATA";
     private final String TAG_OPTION_KM = "COSTO_KM";
     private final String TAG_OPTION_SINGLE = "COSTO_SINGLE";
     private final String TAG_OPTION_DUAL = "COSTO_DUAL";
     private final String TAG_OPTION_REFERT = "COSTO_REFERT";
+    private final String TAG_DESIGNAZIONI_DATA = "DATA";
+    private final String TAG_DESIGNAZIONI_LOCALITA = "LOCALITA";
+    private final String TAG_DESIGNAZIONI_DESIGNAZIONE = "DESIGNAZIONE";
+    private final String TAG_DESIGNAZIONI_MACCHINA = "MACCHINA";
+    private final String TAG_DESIGNAZIONI_REFERTO = "REFERTO";
+    private final String TAG_DESIGNAZIONI_CONCENTRAMENTO = "CONCENTRAMENTO";
+    private final String TAG_DESIGNAZIONI_SPESEDOC = "SPESE_DOCUMENTATE";
+    private final String TAG_DESIGNAZIONI_SPESENON = "SPESE_NON_DOCUM";
+
     //VARIABLES PRIVATE
     private Element root;
     private Document jdomCarta, jdomAnagrafica, jdomDesignazioni, jdomOptions;
     //private Document jdomEccezioni;
     private TreeMap<String, Anagrafica> tmAnagrafica = null;
     private TreeMap<Carta, String> tmCarta = null;
-    private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
+    //private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
     /**inizializza il documento Carta per la scrittura */
     void initializeWriterCarta(){
         root = new Element(TAG_ROOT);
@@ -168,14 +175,36 @@ class Xml {
         root.addContent(item);
     }
 
-    void addItemDesignazione(String _data, String designazione, String localita,
-            String concentramento, String macchina, String spesedoc, String referto,
-            String spesenondoc) {
+    void addItemDesignazione(String _data, String _designazione, String _localita,
+            String _concentramento, String _macchina, String _spesedoc, String _referto,
+            String _spesenondoc) {
+        //TODO
         Element item = new Element(TAG_ITEM);
-        Element data = new Element(TAG_ANAGRAFICA_CODICE);
+        Element data = new Element(TAG_DESIGNAZIONI_DATA);
         data.setText(_data);
+        Element designazione = new Element(TAG_DESIGNAZIONI_DESIGNAZIONE);
+        designazione.setText(_designazione);
+        Element localita = new Element(TAG_DESIGNAZIONI_LOCALITA);
+        localita.setText(_localita);
+        Element concentramento = new Element(TAG_DESIGNAZIONI_CONCENTRAMENTO);
+        concentramento.setText(_concentramento);
+        Element macchina = new Element(TAG_DESIGNAZIONI_MACCHINA);
+        macchina.setText(_macchina);
+        Element spesedoc = new Element(TAG_DESIGNAZIONI_SPESEDOC);
+        spesedoc.setText(_spesedoc);
+        Element referto = new Element(TAG_DESIGNAZIONI_REFERTO);
+        referto.setText(_referto);
+        Element spesenon = new Element(TAG_DESIGNAZIONI_SPESENON);
+        spesenon.setText(_spesenondoc);
 
         item.addContent(data);
+        item.addContent(designazione);
+        item.addContent(localita);
+        item.addContent(concentramento);
+        item.addContent(macchina);
+        item.addContent(spesedoc);
+        item.addContent(referto);
+        item.addContent(spesenon);
         root.addContent(item);
     }
     /**Scrive l'xml carta
@@ -225,16 +254,16 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
-    ArrayList<String[]> initializeReaderAnagrafica(File xml) throws JDOMException,
+    ArrayList<Object[]> initializeReaderAnagrafica(File xml) throws JDOMException,
                 IOException{
-        ArrayList<String[]> array = null;
+        ArrayList<Object[]> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
             jdomAnagrafica = new SAXBuilder().build(xml);
             int size = jdomAnagrafica.getRootElement().getChildren().size();
             if (size>0){
                 tmAnagrafica = new TreeMap<String, Anagrafica>();
-                array = new ArrayList<String[]>();
+                array = new ArrayList<Object[]>();
                 Iterator iterator = jdomAnagrafica.getRootElement().getChildren().iterator();
                 while(iterator.hasNext()){
                     Element role = (Element)iterator.next();
@@ -275,14 +304,14 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
-    ArrayList<String[]> initializeReaderCarta(File xml) throws JDOMException, IOException{
-        ArrayList<String[]> array = null;
+    ArrayList<Object[]> initializeReaderCarta(File xml) throws JDOMException, IOException{
+        ArrayList<Object[]> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
             jdomCarta = new SAXBuilder().build(xml);
             int size = jdomCarta.getRootElement().getChildren().size();
             if (size>0){
-                array = new ArrayList<String[]>();
+                array = new ArrayList<Object[]>();
                 tmCarta = new TreeMap<Carta, String>();
                 Iterator iterator = jdomCarta.getRootElement().getChildren().iterator();
                 while(iterator.hasNext()){
@@ -332,20 +361,50 @@ class Xml {
         return array;
     }*/
 
-    ArrayList<Float> initializeReaderOpzioni(File xml) throws JDOMException, IOException{
-        ArrayList<Float> array = null;
+    ArrayList<Object> initializeReaderOpzioni(File xml) throws JDOMException, IOException{
+        ArrayList<Object> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
             jdomOptions = new SAXBuilder().build(xml);
             int size = jdomOptions.getRootElement().getChildren().size();
             if (size>0){
-                array = new ArrayList<Float>();
+                array = new ArrayList<Object>();
                 Iterator iterator = jdomOptions.getRootElement().getChildren().iterator();
                 Element role = (Element)iterator.next();
                 array.add(Float.valueOf(role.getChild(TAG_OPTION_KM).getText()));
                 array.add(Float.valueOf(role.getChild(TAG_OPTION_SINGLE).getText()));
                 array.add(Float.valueOf(role.getChild(TAG_OPTION_DUAL).getText()));
                 array.add(Float.valueOf(role.getChild(TAG_OPTION_REFERT).getText()));
+            }
+        }
+        return array;
+    }
+
+    ArrayList<Object[]> initializeReaderDesignazioni(File xml) throws JDOMException, IOException {
+        ArrayList<Object[]> array = null;
+        if (xml.exists()){
+            //Creo un SAXBuilder e con esso costruisco un document
+            jdomDesignazioni = new SAXBuilder().build(xml);
+            int size = jdomDesignazioni.getRootElement().getChildren().size();
+            if (size>0){
+                array = new ArrayList<Object[]>();
+                Iterator iterator = jdomDesignazioni.getRootElement().getChildren().iterator();
+                while(iterator.hasNext()){
+                    Element role = (Element)iterator.next();
+                    Object data = role.getChild(TAG_DESIGNAZIONI_DATA).getText();
+                    String design = role.getChild(TAG_DESIGNAZIONI_DESIGNAZIONE).getText()
+                            .toUpperCase();
+                    String city = role.getChild(TAG_DESIGNAZIONI_LOCALITA).getText().toUpperCase();
+                    String conc = role.getChild(TAG_DESIGNAZIONI_CONCENTRAMENTO).getText();
+                    String car = role.getChild(TAG_DESIGNAZIONI_MACCHINA).getText();
+                    String cost1 = role.getChild(TAG_DESIGNAZIONI_SPESEDOC).getText();
+                    String ref = role.getChild(TAG_DESIGNAZIONI_REFERTO).getText();
+                    String cost2 = role.getChild(TAG_DESIGNAZIONI_SPESENON).getText();
+                    Object[] temp = {data, design, city, Boolean.valueOf(conc), Boolean.valueOf(car),
+                                        Float.valueOf(cost1), Boolean.valueOf(ref),
+                                        Float.valueOf(cost2)};
+                    array.add(temp);
+                }
             }
         }
         return array;
@@ -368,7 +427,9 @@ class Xml {
      *
      * @return
      */
+    /*
     TreeMap<String, TreeSet<Date>> getMapEccezioni() {
         return tmEccezioni;
     }
+    */
 }

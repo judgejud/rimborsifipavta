@@ -1,6 +1,5 @@
 package it.fipavpuglia.taranto.lm.gui;
 
-import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -46,9 +45,9 @@ public class paneOpzioni extends paneAbstract{
         jtable.setModel(dtm);
     }
 
-    void setTableValues(ArrayList<Float> af){
-        for (int i=0; i<af.size(); i++)
-            dtm.setValueAt(af.get(i), i, 1);
+    void setTableValues(Object[] o){
+        for (int i=0; i<o.length; i++)
+            dtm.setValueAt(o[i], i, 1);
     }
 
     @Override
