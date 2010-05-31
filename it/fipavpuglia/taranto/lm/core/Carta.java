@@ -26,6 +26,7 @@ public class Carta implements Comparable<Carta>{
         return partenza;
     }
 
+    @Override
     public int compareTo(Carta o) {
         if (this.getPartenza().equals(o.getPartenza()))
             return (this.getArrivo().compareTo(o.getArrivo()));
