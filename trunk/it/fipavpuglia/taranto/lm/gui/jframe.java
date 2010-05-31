@@ -24,9 +24,9 @@ import org.lp.myUtils.lang.Lang;
  */
 @SuppressWarnings("serial")
 public class jframe extends JFrame implements WindowListener, MyFrameEventListener{
-    private final Dimension SCREENSIZE = new Dimension(1024, 600);
-    private final Dimension TABBEDSIZE = new Dimension(1024, 440);
-    private final Dimension TEXTPANESIZE = new Dimension(1024, 110);
+    private final Dimension SCREENSIZE = new Dimension(1024, 768);
+    private final Dimension TABBEDSIZE = new Dimension(1024, 580);
+    private final Dimension TEXTPANESIZE = new Dimension(1024, 140);
     private Mediator proxy = Mediator.getInstance();
     private JTabbedPane jtabbedpane;
     private textpaneLog jtpLog;
@@ -52,7 +52,6 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         proxy.setTextPaneListener(jtpLog);
         addWindowListener(this);
         jtpLog.appendOK("Versione java in uso: " + Lang.getJavaVersion());
-        proxy.loadXML();
     }
 
     private void initTabPanel(){
@@ -166,7 +165,9 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         else if (evt.getNameDest().equals(proxy.getNameTableOptions()))
             jpOpzioni.setTableValues(evt.getArrayO());
         else if (evt.getNameDest().equals(proxy.getNameComboArbitri()))
-            jpPartite.setComboValues(evt.getArrayO());
+            jpPartite.setComboArbitriValues(evt.getArrayO());
+        else if (evt.getNameDest().equals(proxy.getNameComboLocalita()))
+            jpPartite.setComboLocalitaValues(evt.getArrayO());
         else if (evt.getNameDest().equals(proxy.getNameTableDesignaz()))
             jpPartite.addRows(evt.getArrayList());
         //else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))

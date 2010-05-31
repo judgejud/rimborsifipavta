@@ -1,12 +1,17 @@
 package it.fipavpuglia.taranto.lm.gui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.lp.myUtils.Swing;
 /**
@@ -82,12 +87,43 @@ public class panePartite extends paneAbstract{
                 new Object[]{null ,null, null, false, true, 0.00, false , 0.00});
     }
 
-    void setComboValues(Object[] arrayO) {
+    void setComboArbitriValues(Object[] arrayO) {
         if (jcbArbitri.getItemCount()>0)
             jcbArbitri.setModel(new DefaultComboBoxModel());
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel(arrayO);
         dcbm.insertElementAt(null, 0);
         jcbArbitri.setModel(dcbm);
         jcbArbitri.setSelectedIndex(0);
+    }
+    
+    void setComboLocalitaValues(Object[] arrayO){
+        TableColumn col_role = jtable.getColumnModel().getColumn(2);
+        col_role.setCellEditor(new MyComboBoxEditor(arrayO));
+        col_role.setCellRenderer(new MyComboBoxRenderer(arrayO));
+    }
+
+    class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+        public MyComboBoxRenderer(Object[] items) {
+            super(items);
+        }
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                super.setBackground(table.getSelectionBackground());
+            } else {
+                setForeground(table.getForeground());
+                setBackground(table.getBackground());
+            }
+            setSelectedItem(value);
+            return this;
+        }
+    }
+
+    class MyComboBoxEditor extends DefaultCellEditor {
+        public MyComboBoxEditor(Object[] items) {
+            super(new JComboBox(items));
+        }
     }
 }

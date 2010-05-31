@@ -8,8 +8,10 @@ import it.fipavpuglia.taranto.lm.gui.events.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
@@ -94,10 +96,6 @@ class Mediator {
             s = "0";
         s += String.valueOf(n);
         return s;
-    }
-
-    void loadXML() {
-        core.loadXML();
     }
 
     void saveAnagrafica(Vector dataVector) {
@@ -220,6 +218,16 @@ class Mediator {
         }
     }
 
+    void invokeCalcoli(String from, String to) {
+        try {
+            Date begin = core.convertStringToDate(from);
+            Date end = core.convertStringToDate(to);
+            core.fireCalcoli(begin, end);
+        } catch (ParseException ex) {
+            printAlert("controllare le date per il calcolo nel formato gg/mm/yyyy");
+        }
+    }
+
     void saveDesignazioni(Object selectedItem, Vector dataVector) {
         core.saveDesignazioni(selectedItem, dataVector);
     }
@@ -250,6 +258,10 @@ class Mediator {
 
     String getNameComboArbitri(){
         return core.getCOMBO_ARBITRI();
+    }
+
+    String getNameComboLocalita(){
+        return core.getCOMBO_LOCALITA();
     }
 
     String getNameTableDesignaz(){

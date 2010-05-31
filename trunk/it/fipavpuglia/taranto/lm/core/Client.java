@@ -39,6 +39,7 @@ public class Client {
                     }
                     Kernel.getInstance();
                     new jframe();
+                    Kernel.getInstance().loadXML();
                 }
             });
         }//end if

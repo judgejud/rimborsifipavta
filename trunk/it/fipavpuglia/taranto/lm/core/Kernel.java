@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import it.fipavpuglia.taranto.lm.gui.events.*;
-import java.util.Vector;
 
 import org.lp.myUtils.Util;
 import org.lp.myUtils.lang.Lang;
@@ -44,6 +44,7 @@ public class Kernel {
     private final String TABLE_CARTA="Carta";
     private final String TABLE_OPZIONI="Opzioni";
     private final String COMBO_ARBITRI="Arbitri";
+    private final String COMBO_LOCALITA="Localita";
     private final String DESIGNAZIONI_DIR = "designazioni" + File.separator;
     //private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
@@ -71,13 +72,14 @@ public class Kernel {
         return core;
     }
 
-    public void loadXML() {
+    void loadXML() {
         Xml load = new Xml();
         try {
             fireNewFrameEvent(TABLE_ANAGRAFICA, load.initializeReaderAnagrafica(XML_ANAGRAFICA));
             tmAnagrafica = load.getMapAnagrafica();
             fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
             fireNewFrameEvent(TABLE_CARTA, load.initializeReaderCarta(XML_CARTA));
+            fireNewFrameEvent(COMBO_LOCALITA, load.getSetCarta().toArray());
             tmCarta = load.getMapCarta();
             ArrayList<Object> opt = load.initializeReaderOpzioni(XML_OPZIONI);
             if (opt!=null){
@@ -499,6 +501,38 @@ public class Kernel {
         }
     }
 
+    public void fireCalcoli(Date begin, Date end) {
+        //tmAnagrafica.keySet().iterator();
+        String name = "MIGNOGNA";
+        File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
+        Xml load = new Xml();
+        try {
+            ArrayList<Object[]> dati = load.initializeReaderDesignazioni(file);
+            for (int i=0; i<dati.size(); i++){
+/* Object data; String design; String city; Boolean conc; Boolean car; Float cost1;
+ Boolean ref; Float cost2; */
+                Object partita[] = dati.get(i);
+                Date data_design = null;
+                try {
+                    data_design = convertStringToDate(partita[0].toString());
+                } catch (ParseException ex) {}
+                if (data_design.getTime() >= begin.getTime()){
+                    if (data_design.getTime() <= end.getTime()){
+                        //TODO
+                        
+                    } else
+                        break;
+                }
+            }
+        } catch (JDOMException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public String getCurDir() {
         return curDir;
     }
@@ -522,11 +556,11 @@ public class Kernel {
     public String getCOMBO_ARBITRI(){
         return COMBO_ARBITRI;
     }
-    /*
-    public String getTABLE_ECCEZIONI() {
-        return TABLE_ECCEZIONI;
+
+    public String getCOMBO_LOCALITA() {
+        return COMBO_LOCALITA;
     }
-    */
+    
     private void printAlert(String print){
         fireNewTextPaneEvent(print, MyTextPaneEvent.ALERT);
     }
@@ -580,15 +614,5 @@ public class Kernel {
             MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
             myel.objReceived(event);
         }
-    }
-/*
-    private synchronized void fireNewFrameEvent(ArrayList<Float> _array, String _name) {
-        MyFrameEvent event = new MyFrameEvent(this, _array, _name);
-        Iterator listeners = listenerFrame.iterator();
-        while(listeners.hasNext()) {
-            MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
-            myel.objReceived(event);
-        }
-    }
-*/
+    }    
 }

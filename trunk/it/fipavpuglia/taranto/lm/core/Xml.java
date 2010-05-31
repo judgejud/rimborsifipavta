@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 //IMPORT JDOM
+import java.util.TreeSet;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -56,6 +57,7 @@ class Xml {
     //private Document jdomEccezioni;
     private TreeMap<String, Anagrafica> tmAnagrafica = null;
     private TreeMap<Carta, String> tmCarta = null;
+    private TreeSet<String> tsCarta;
     //private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
     /**inizializza il documento Carta per la scrittura */
     void initializeWriterCarta(){
@@ -313,6 +315,7 @@ class Xml {
             if (size>0){
                 array = new ArrayList<Object[]>();
                 tmCarta = new TreeMap<Carta, String>();
+                tsCarta = new TreeSet<String>();
                 Iterator iterator = jdomCarta.getRootElement().getChildren().iterator();
                 while(iterator.hasNext()){
                     Element role = (Element)iterator.next();
@@ -322,6 +325,8 @@ class Xml {
                     String[] temp = {paese1, paese2, km};
                     array.add(temp);
                     tmCarta.put(new Carta(paese1, paese2), km);
+                    tsCarta.add(paese1);
+                    tsCarta.add(paese2);
                 }
             }
         }
@@ -422,6 +427,10 @@ class Xml {
      */
     TreeMap<Carta, String> getMapCarta() {
         return tmCarta;
+    }
+
+    TreeSet<String> getSetCarta(){
+        return tsCarta;
     }
     /**
      *
