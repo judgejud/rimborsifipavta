@@ -1,5 +1,11 @@
 package it.fipavpuglia.taranto.lm.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -13,15 +19,16 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Vector;
 
 public class Pdf {
     private Document documento;
     private Font arial10n = FontFactory.getFont("Arial", 10, Font.NORMAL);
+    private Font arial9n = FontFactory.getFont("Arial", 9, Font.NORMAL);
     private Font arial10b = FontFactory.getFont("Arial", 10, Font.BOLD);
     private Font arial11b = FontFactory.getFont("Arial", 11, Font.BOLD);
     private PdfPTable tableIntestazione = null;
@@ -81,6 +88,7 @@ public class Pdf {
             tableIntestazione.addCell(ctext);
         }
         documento.add(tableIntestazione);
+        documento.add(new Paragraph());
     }
     
     void printAnagrafica(Anagrafica ana, String periodo) throws FileNotFoundException,
@@ -140,7 +148,7 @@ public class Pdf {
         tabella.addCell(cellAnag);
         documento.add(tabella);
 
-        float[] colsWidth3 = {5.5f, 1.25f, 1.2f, 1.5f, 3.5f};
+        float[] colsWidth3 = {5.45f, 1.3f, 1.2f, 1.8f, 3.5f};
         tabella = new PdfPTable(colsWidth3);
         tabella.setWidthPercentage(100);
         cellText = new PdfPCell(new Phrase("chiede che gli siano liquidate le " +
@@ -159,11 +167,12 @@ public class Pdf {
         cellText.setPhrase(new Phrase("in occasione delle sotto elencate prestazioni",
                 arial10n));
         tabella.addCell(cellText);
+        tabella.setSpacingAfter(2f);
         documento.add(tabella);
     }
     
-    void printPartite() throws FileNotFoundException, DocumentException{
-        float[] colsWidth = {0.3f, 0.7f, 2f, 1, 0.4f, 1.1f, 1.5f, 1.5f, 1.5f, 1f};
+    void printPartite(ArrayList<Vector> array) throws FileNotFoundException, DocumentException{
+        float[] colsWidth = {0.3f, 0.8f, 2f, 1.5f, 0.4f, 1.1f, 1.5f, 1.5f, 1.5f, 0.8f};
         PdfPTable tabella = new PdfPTable(colsWidth);
         tabella.setWidthPercentage(100);
         PdfPCell cellText = new PdfPCell(new Phrase("\nN°", arial10b));
@@ -211,9 +220,147 @@ public class Pdf {
         cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
         cellText.setBorderWidth(1.5f);
         tabella.addCell(cellText);
-
         
+        for (int i=0; i<array.size()-1; i++){
+            Vector v = array.get(i);
+            //NUMERO
+            cellText = new PdfPCell(new Phrase(String.valueOf(i+1), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);            
+            tabella.addCell(cellText);
+            //DATA
+            cellText = new PdfPCell(new Phrase(v.get(0).toString(), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //DESIGNAZIONE
+            cellText = new PdfPCell(new Phrase(v.get(1).toString(), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //LOCALITA
+            cellText = new PdfPCell(new Phrase(v.get(2).toString(), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //KM
+            cellText = new PdfPCell(new Phrase(v.get(3).toString(), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //RIMBORSO AUTO
+            cellText = new PdfPCell(new Phrase(euroFormat(v.get(4)), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //RIMBORSO SPESE DOCUMENTATE
+            cellText = new PdfPCell(new Phrase(euroFormat(v.get(5)), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //RIMBORSO SPESE non DOCUMENTATE
+            cellText = new PdfPCell(new Phrase(euroFormat(v.get(6)), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //RIMBORSO FORFETTARIO PARTITE
+            cellText = new PdfPCell(new Phrase(euroFormat(v.get(7)), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            //TOTALE RIGA
+            cellText = new PdfPCell(new Phrase(euroFormat(v.get(8)), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+        }
+        for (int i=0; i<23-array.size(); i++){
+            for (int j=0; j<colsWidth.length; j++){
+                cellText = new PdfPCell(new Phrase());
+                cellText.setBorderWidth(1f);
+                cellText.setMinimumHeight(10f);
+                tabella.addCell(cellText);
+            }
+        }
+        Vector v = array.get(array.size()-1);
+        //TOTALE
+        cellText = new PdfPCell(new Phrase("TOTALI", arial10b));
+        cellText.setColspan(4);
+        cellText.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellText.setBorderWidth(1f);
+        tabella.addCell(cellText);
+        //KM
+        cellText = new PdfPCell(new Phrase(v.get(0).toString(), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        //RIMBORSO AUTO
+        cellText = new PdfPCell(new Phrase(euroFormat(v.get(1)), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase(euroFormat(v.get(2)), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase(euroFormat(v.get(3)), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase(euroFormat(v.get(4)), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        cellText = new PdfPCell(new Phrase(euroFormat(v.get(5)), arial10b));
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorderWidth(1.5f);
+        tabella.addCell(cellText);
+        documento.add(tabella);
+    }
 
+    void printChiusura() throws DocumentException{
+        PdfPTable tabella = new PdfPTable(1);
+        tabella.setWidthPercentage(100);
+        Phrase text = new Phrase("DICHIARAZIONI DEL PERCIPIENTE", arial10b);
+        PdfPCell cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di avere " +
+                "effettivamente effettuato le prestazioni sopra esposte e che tutte le spese ed " +
+                "indennità qui descritte sono derivanti dall'incarico conferitogli.", arial9n);
+        cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        text = new Phrase("                              Giustificativi di spesa allegati n° _____",
+                arial10b);
+        cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        text = new Phrase("    Data ___________                                                  " +
+                "Firma leggibile  ______________________________________", arial10n);
+        cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorder(0);
+        cellText.setMinimumHeight(1.7f);
+        tabella.addCell(cellText);
+        text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di non aver" +
+                " superato, col pagamento della suddetta indennità, il limite di € 7.500,00 " +
+                "previsto dall'art.37, legge 342/2000. S'impegna, inoltre, a comunicare alla " +
+                "Federazione il superamento di detto limite.", arial9n);
+        cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
+        cellText.setBorder(0);
+        tabella.addCell(cellText);
+        text = new Phrase("    Data ___________                                                  " +
+                "Firma leggibile  ______________________________________", arial10n);
+        cellText = new PdfPCell(text);
+        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellText.setBorder(0);
+        cellText.setMinimumHeight(1.8f);
+        tabella.addCell(cellText);
         documento.add(tabella);
     }
 
@@ -221,40 +368,9 @@ public class Pdf {
         documento.close();
     }
 
-    /**Stampa i dati in una tabella 
-     * 
-     * @param dati dati da stampare
-     * @param titolo titolo colonne
-     * @param lunghezza lunghezza in percentuale delle colonne
-     */
-    void stampaTabella(Object[][] dati, Object[] titolo, float[] lunghezza)
-            throws FileNotFoundException, DocumentException{
-        int righe=dati.length;
-        int colonne=dati[0].length;
-        //documento.add(new Paragraph(nomedocumento));
-        documento.add(new Paragraph("\n"));
-        PdfPTable tabella = new PdfPTable(lunghezza);
-        if (colonne==2)
-            tabella.setWidthPercentage(50);
-        else if (colonne==3)
-            tabella.setWidthPercentage(75);
-        else if (colonne==4)
-            tabella.setWidthPercentage(90);
-        else if (colonne>4)
-            tabella.setWidthPercentage(100);
-        tabella.setHeaderRows(1);
-        if (titolo!=null){
-            for (int i=0; i<colonne; i++)
-                tabella.addCell(new Phrase(titolo[i].toString()));
-        }
-        for (int i=0; i<righe; i++)
-            for (int j=0; j<colonne; j++) {
-                String temp = "";
-                if (dati[i][j]!=null)
-                    temp = dati[i][j].toString();
-                tabella.addCell(temp);
-            }
-        documento.add(tabella);
-        documento.close();
+    private String euroFormat(Object obj){
+        DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance(Locale.ITALY);
+        df.applyPattern("€ #,##0.00");
+        return df.format(Float.parseFloat(obj.toString()));
     }
 } // end class

@@ -230,14 +230,14 @@ class Mediator {
 
     void saveDesignazioni(Object selectedItem, Vector dataVector) {
         core.saveDesignazioni(selectedItem, dataVector);
-    }
-
-    void testPDF() {
-        core.testPDF();
-    }
+    }    
 
     void testXLS() {
         core.testXLS();
+    }
+
+    void invokePrintPdf(String from, String to) {
+        core.createPDF(from+"-"+to);
     }
 
     String getNameTableAnagrafica(){
