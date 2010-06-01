@@ -451,15 +451,18 @@ public class Kernel {
 
     }
 
-    public void testPDF() {
+    public void createPDF(String periodo) {
         Iterator<String> it = tmAnagrafica.keySet().iterator();
         try {
             Pdf pdf = new Pdf("test", "test", false);
             pdf.creaIntestazione();
-            String temp = "01/01/10-07/03/10";
-            pdf.printAnagrafica(tmAnagrafica.get(it.next()),temp);
-            pdf.printPartite();
+            String nome = "MIGNOGNA";
+            //String nome = it.next();
+            pdf.printAnagrafica(tmAnagrafica.get(nome),periodo);
+            pdf.printPartite(calcoli.get(nome));
+            pdf.printChiusura();
             pdf.close();
+            printOk("PDF creato correttamente");
         } catch (BadElementException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
@@ -586,7 +589,9 @@ public class Kernel {
             v.add(tot_partite);
             v.add(totale);
             array.add(v);
-            calcoli.put(name, array);            
+            calcoli.put(name, array);
+
+            printOk("Calcoli effettuati, puoi procedere con la stampa");
         } catch (JDOMException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();

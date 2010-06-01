@@ -87,7 +87,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         JMenuItem jmnItemExit = new JMenuItem(" Uscita ");
         JMenuItem jmnTestRimborsi = new JMenuItem(" Testa presenza località xls in xml");
         JMenuItem jmnTestArbitri = new JMenuItem(" Testa presenza arbitri xls in xml ");
-        JMenuItem jmnTestPDF = new JMenuItem(" Testa scrittura pdf ");
+        
         JMenuItem jmnTestXLS = new JMenuItem(" Testa scrittura xls ");
         jmnItem01.addActionListener(new ActionListener() {
             @Override
@@ -130,13 +130,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
             public void actionPerformed(ActionEvent e) {
                 proxy.invokeBackupXml(jframe.this);
             }
-        });
-        jmnTestPDF.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                proxy.testPDF();
-            }
-        });
+        });        
         jmnTestXLS.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,7 +144,6 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jmenuWork.add(jmnItemExit);
         jmenuTest.add(jmnTestArbitri);
         jmenuTest.add(jmnTestRimborsi);
-        jmenuTest.add(jmnTestPDF);
         jmenuTest.add(jmnTestXLS);
         jmenuBar.add(jmenuWork);
         jmenuBar.add(jmenuTest);

@@ -3,8 +3,8 @@ package it.fipavpuglia.taranto.lm.gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -50,14 +50,23 @@ public class paneCalcoli extends JPanel{
         gbc.gridx = 2;
         this.add(jtxtDateTo, gbc);
         JButton jbCalcoli = new JButton("Calcola");
-        jbCalcoli.addMouseListener(new MouseAdapter() {
+        jbCalcoli.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent evt) {
+            public void actionPerformed(ActionEvent e) {
                 proxy.invokeCalcoli(jtxtDateFrom.getText(), jtxtDateTo.getText());
             }
         });
         gbc.gridx = 1;
         gbc.gridy = 4;
         this.add(jbCalcoli, gbc);
+        JButton jbStampaPdf = new JButton("Stampa PDF");
+        jbStampaPdf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                proxy.invokePrintPdf(jtxtDateFrom.getText(), jtxtDateTo.getText());
+            }
+        });
+        gbc.gridy = 6;
+        this.add(jbStampaPdf, gbc);
     }
 }
