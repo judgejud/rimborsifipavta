@@ -198,7 +198,7 @@ class Mediator {
     }    
 
     void saveOption(Vector dataVector) {
-        float[] values = new float[4];        
+        float[] values = new float[5];
         Vector temp = null;
         try{
             for (int i=0; i<dataVector.size(); i++){

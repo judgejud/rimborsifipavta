@@ -42,6 +42,7 @@ class Xml {
     private final String TAG_OPTION_SINGLE = "COSTO_SINGLE";
     private final String TAG_OPTION_DUAL = "COSTO_DUAL";
     private final String TAG_OPTION_REFERT = "COSTO_REFERT";
+    private final String TAG_OPTION_LIMITKM = "LIMITE_KM";
     private final String TAG_DESIGNAZIONI_DATA = "DATA";
     private final String TAG_DESIGNAZIONI_LOCALITA = "LOCALITA";
     private final String TAG_DESIGNAZIONI_DESIGNAZIONE = "DESIGNAZIONE";
@@ -170,10 +171,14 @@ class Xml {
         dual.setText(String.valueOf(costo[2]));
         Element refert = new Element(TAG_OPTION_REFERT);
         refert.setText(String.valueOf(costo[3]));
+        Element limitkm = new Element(TAG_OPTION_LIMITKM);
+        limitkm.setText(String.valueOf(costo[4]));
+
         item.addContent(km);
         item.addContent(single);
         item.addContent(dual);
         item.addContent(refert);
+        item.addContent(limitkm);
         root.addContent(item);
     }
 
@@ -376,13 +381,22 @@ class Xml {
                 array = new ArrayList<Object>();
                 Iterator iterator = jdomOptions.getRootElement().getChildren().iterator();
                 Element role = (Element)iterator.next();
-                array.add(Float.valueOf(role.getChild(TAG_OPTION_KM).getText()));
-                array.add(Float.valueOf(role.getChild(TAG_OPTION_SINGLE).getText()));
-                array.add(Float.valueOf(role.getChild(TAG_OPTION_DUAL).getText()));
-                array.add(Float.valueOf(role.getChild(TAG_OPTION_REFERT).getText()));
+                array.add(getFloatValueXML(role, TAG_OPTION_KM));
+                array.add(getFloatValueXML(role, TAG_OPTION_SINGLE));
+                array.add(getFloatValueXML(role, TAG_OPTION_DUAL));
+                array.add(getFloatValueXML(role, TAG_OPTION_REFERT));
+                array.add(getFloatValueXML(role, TAG_OPTION_LIMITKM));
             }
         }
         return array;
+    }
+
+    private float getFloatValueXML(Element elem, String tag){
+        float value = 0;
+        try {
+            value = Float.valueOf(getItemXml(elem, tag));
+        } catch (NumberFormatException e){}
+        return value;
     }
 
     ArrayList<Object[]> initializeReaderDesignazioni(File xml) throws JDOMException, IOException {

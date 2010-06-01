@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
@@ -52,7 +53,7 @@ public class Kernel {
     //private final File XML_ECCEZIONI = new File("eccezioni.xml");
     private final File XML_OPZIONI = new File("opzioni.xml");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-    private float costoKM, costoSingolaP, costoDoppiaP, costoReferto;
+    private float costoKM, costoSingolaP, costoDoppiaP, costoReferto, limiteKm;
     private String curDir;
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
@@ -60,6 +61,7 @@ public class Kernel {
     private TreeMap<String, Anagrafica> tmAnagrafica;
     private TreeMap<Carta, String> tmCarta;
     private TreeMap<String, TreeSet<Date>> tmEccezioni;
+    private HashMap<String, ArrayList<Vector>> calcoli;
 
     /**Costruttore privato*/
     private Kernel(){
@@ -87,6 +89,7 @@ public class Kernel {
                 costoSingolaP = ((Float)opt.get(1)).floatValue();
                 costoDoppiaP = ((Float)opt.get(2)).floatValue();
                 costoReferto = ((Float)opt.get(3)).floatValue();
+                limiteKm = ((Float)opt.get(4)).floatValue();
                 fireNewFrameEvent(TABLE_OPZIONI, opt.toArray());
             }
             //fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
@@ -408,6 +411,7 @@ public class Kernel {
             costoSingolaP = values[1];
             costoDoppiaP = values[2];
             costoReferto = values[3];
+            limiteKm = values[4];
         } catch (IOException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
@@ -503,14 +507,21 @@ public class Kernel {
 
     public void fireCalcoli(Date begin, Date end) {
         //tmAnagrafica.keySet().iterator();
+        calcoli = new HashMap<String, ArrayList<Vector>>();
         String name = "MIGNOGNA";
         File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
         Xml load = new Xml();
         try {
+            ArrayList<Vector> array = new ArrayList<Vector>();
+            String residenza = tmAnagrafica.get(name).getCity_card();
             ArrayList<Object[]> dati = load.initializeReaderDesignazioni(file);
+            int tot_km = 0;
+            float tot_rimb = 0, tot_spesedoc = 0, tot_spesenon = 0, tot_partite = 0;
+            Date oldDate = null;
+            try {
+                oldDate = convertStringToDate("01/01/2000");
+            } catch (ParseException ex) {}
             for (int i=0; i<dati.size(); i++){
-/* Object data; String design; String city; Boolean conc; Boolean car; Float cost1;
- Boolean ref; Float cost2; */
                 Object partita[] = dati.get(i);
                 Date data_design = null;
                 try {
@@ -518,12 +529,64 @@ public class Kernel {
                 } catch (ParseException ex) {}
                 if (data_design.getTime() >= begin.getTime()){
                     if (data_design.getTime() <= end.getTime()){
+                        Vector v = new Vector();
+                        int km = 0;
+                        float rimb_km = 0, totale_riga = 0;
+                        String localita = partita[2].toString();
+                        boolean car = Boolean.parseBoolean(partita[4].toString());
+                        if (car && !residenza.equalsIgnoreCase(localita) &&
+                                !oldDate.equals(data_design))
+                            km = Integer.parseInt(tmCarta.get(new Carta(residenza, localita))) * 2;
+                        if (km>0){
+                            rimb_km = km * costoKM;
+                            tot_km += km;
+                            tot_rimb += rimb_km;
+                        }
+                        float spesedoc = Float.parseFloat(partita[5].toString());
+                        tot_spesedoc += spesedoc;
+                        boolean referto = Boolean.parseBoolean(partita[6].toString());
+                        float spesenond = Float.parseFloat(partita[7].toString());
+                        if (referto)
+                            spesenond += costoReferto;
+                        tot_spesenon += spesenond;
+                        //Determino il rimborso forfettario
+                        float rimb_partita = 0;
+                        boolean concentram = Boolean.parseBoolean(partita[3].toString());
+                        if (concentram && !oldDate.equals(data_design))
+                            rimb_partita = costoDoppiaP;
+                        else if (!concentram && km>limiteKm)
+                            rimb_partita = costoDoppiaP;
+                        else if (!concentram)
+                            rimb_partita = costoSingolaP;
+                        tot_partite += rimb_partita;
+                        totale_riga = rimb_km + spesedoc + spesenond + rimb_partita;
+                        oldDate = data_design;
                         //TODO
-                        
+                        v.add(partita[0]); //data
+                        v.add(partita[1]); //designazione
+                        v.add(localita);
+                        v.add(km);
+                        v.add(rimb_km);
+                        v.add(spesedoc);
+                        v.add(spesenond);
+                        v.add(rimb_partita);
+                        v.add(totale_riga);
+                        array.add(v);
                     } else
                         break;
                 }
-            }
+            } //end for
+            //calcolo TOTALI
+            float totale = tot_rimb + tot_spesedoc + tot_spesenon + tot_partite;
+            Vector v = new Vector();
+            v.add(tot_km);
+            v.add(tot_rimb);
+            v.add(tot_spesedoc);
+            v.add(tot_spesenon);
+            v.add(tot_partite);
+            v.add(totale);
+            array.add(v);
+            calcoli.put(name, array);            
         } catch (JDOMException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();

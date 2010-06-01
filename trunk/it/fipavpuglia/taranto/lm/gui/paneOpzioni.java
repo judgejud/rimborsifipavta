@@ -42,6 +42,7 @@ public class paneOpzioni extends paneAbstract{
         dtm.addRow(new String[]{"Costo singola partita", null});
         dtm.addRow(new String[]{"Costo doppia partita", null});
         dtm.addRow(new String[]{"Costo rimborso referto", null});
+        dtm.addRow(new String[]{"Limite km", null});
         jtable.setModel(dtm);
     }
 
