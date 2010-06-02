@@ -63,7 +63,7 @@ public class paneCalcoli extends JPanel{
         jbStampaPdf.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                proxy.invokePrintPdf(jtxtDateFrom.getText(), jtxtDateTo.getText());
+                proxy.invokePrintPdf(getParent(), jtxtDateFrom.getText(), jtxtDateTo.getText());
             }
         });
         gbc.gridy = 6;

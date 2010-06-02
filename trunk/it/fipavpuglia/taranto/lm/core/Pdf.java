@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Vector;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
@@ -14,16 +19,10 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Vector;
 
 public class Pdf {
     private Document documento;
@@ -31,7 +30,7 @@ public class Pdf {
     private Font arial9n = FontFactory.getFont("Arial", 9, Font.NORMAL);
     private Font arial10b = FontFactory.getFont("Arial", 10, Font.BOLD);
     private Font arial11b = FontFactory.getFont("Arial", 11, Font.BOLD);
-    private PdfPTable tableIntestazione = null;
+    private PdfPTable tableIntestazione=null, tableChiusura=null, tableHeader=null;
     /**Crea il pdf
      * 
      * @param tNomeFile  nome file
@@ -88,7 +87,6 @@ public class Pdf {
             tableIntestazione.addCell(ctext);
         }
         documento.add(tableIntestazione);
-        documento.add(new Paragraph());
     }
     
     void printAnagrafica(Anagrafica ana, String periodo) throws FileNotFoundException,
@@ -274,11 +272,15 @@ public class Pdf {
             cellText.setBorderWidth(1f);
             tabella.addCell(cellText);
         }
-        for (int i=0; i<23-array.size(); i++){
-            for (int j=0; j<colsWidth.length; j++){
+
+        for (int i=array.size(); i<23; i++){
+            cellText = new PdfPCell(new Phrase(String.valueOf(i), arial10n));
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorderWidth(1f);
+            tabella.addCell(cellText);
+            for (int j=0; j<colsWidth.length-1; j++){
                 cellText = new PdfPCell(new Phrase());
-                cellText.setBorderWidth(1f);
-                cellText.setMinimumHeight(10f);
+                cellText.setBorderWidth(1f);                
                 tabella.addCell(cellText);
             }
         }
@@ -319,53 +321,59 @@ public class Pdf {
     }
 
     void printChiusura() throws DocumentException{
-        PdfPTable tabella = new PdfPTable(1);
-        tabella.setWidthPercentage(100);
-        Phrase text = new Phrase("DICHIARAZIONI DEL PERCIPIENTE", arial10b);
-        PdfPCell cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cellText.setBorder(0);
-        tabella.addCell(cellText);
-        text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di avere " +
-                "effettivamente effettuato le prestazioni sopra esposte e che tutte le spese ed " +
-                "indennità qui descritte sono derivanti dall'incarico conferitogli.", arial9n);
-        cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
-        cellText.setBorder(0);
-        tabella.addCell(cellText);
-        text = new Phrase("                              Giustificativi di spesa allegati n° _____",
-                arial10b);
-        cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
-        cellText.setBorder(0);
-        tabella.addCell(cellText);
-        text = new Phrase("    Data ___________                                                  " +
-                "Firma leggibile  ______________________________________", arial10n);
-        cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cellText.setBorder(0);
-        cellText.setMinimumHeight(1.7f);
-        tabella.addCell(cellText);
-        text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di non aver" +
-                " superato, col pagamento della suddetta indennità, il limite di € 7.500,00 " +
-                "previsto dall'art.37, legge 342/2000. S'impegna, inoltre, a comunicare alla " +
-                "Federazione il superamento di detto limite.", arial9n);
-        cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
-        cellText.setBorder(0);
-        tabella.addCell(cellText);
-        text = new Phrase("    Data ___________                                                  " +
-                "Firma leggibile  ______________________________________", arial10n);
-        cellText = new PdfPCell(text);
-        cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cellText.setBorder(0);
-        cellText.setMinimumHeight(1.8f);
-        tabella.addCell(cellText);
-        documento.add(tabella);
+        if (tableChiusura == null) {
+            tableChiusura = new PdfPTable(1);
+            tableChiusura.setWidthPercentage(100);
+            Phrase text = new Phrase("DICHIARAZIONI DEL PERCIPIENTE", arial10b);
+            PdfPCell cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorder(0);
+            tableChiusura.addCell(cellText);
+            text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di " +
+                    "avere effettivamente effettuato le prestazioni sopra esposte e che tutte le " +
+                    "spese ed indennità qui descritte sono derivanti dall'incarico conferitogli.",
+                    arial9n);
+            cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cellText.setBorder(0);
+            tableChiusura.addCell(cellText);
+            text = new Phrase("Giustificativi di spesa allegati n° _____", arial10b);
+            cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cellText.setBorder(0);
+            tableChiusura.addCell(cellText);
+            text = new Phrase("    Data ___________                                               "+
+                    "Firma leggibile  ______________________________________", arial10n);
+            cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorder(0);
+            cellText.setMinimumHeight(1.7f);
+            tableChiusura.addCell(cellText);
+            text = new Phrase("Il sottoscritto dichiara, sotto la propria responsabilità, di non "+
+                    "aver superato, col pagamento della suddetta indennità, il limite di € " +
+                    "7.500,00 previsto dall'art.37, legge 342/2000. S'impegna, inoltre, a " +
+                    "comunicare alla Federazione il superamento di detto limite.", arial9n);
+            cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
+            cellText.setBorder(0);
+            tableChiusura.addCell(cellText);
+            text = new Phrase("    Data ___________                                               "+
+                    "Firma leggibile  ______________________________________", arial10n);
+            cellText = new PdfPCell(text);
+            cellText.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellText.setBorder(0);
+            cellText.setMinimumHeight(1.8f);
+            tableChiusura.addCell(cellText);
+        }
+        documento.add(tableChiusura);
     }
 
     void close(){
         documento.close();
+    }
+
+    void newPage(){
+        documento.newPage();
     }
 
     private String euroFormat(Object obj){
