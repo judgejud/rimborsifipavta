@@ -451,16 +451,23 @@ public class Kernel {
 
     }
 
-    public void createPDF(String periodo) {
-        Iterator<String> it = tmAnagrafica.keySet().iterator();
-        try {
-            Pdf pdf = new Pdf("test", "test", false);
-            pdf.creaIntestazione();
-            String nome = "MIGNOGNA";
-            //String nome = it.next();
-            pdf.printAnagrafica(tmAnagrafica.get(nome),periodo);
-            pdf.printPartite(calcoli.get(nome));
-            pdf.printChiusura();
+    public void createPDF(String namefile, String periodo) {        
+        try {            
+            Pdf pdf = new Pdf(namefile, "Rimborsi arbitri/osservatori", false);
+            Iterator<String> it = tmAnagrafica.keySet().iterator();
+            while (it.hasNext()){
+                String nome = it.next();
+                if (calcoli.containsKey(nome)) {
+                    ArrayList<Vector> array = calcoli.get(nome);
+                    if (array.size()>1){
+                        pdf.creaIntestazione();
+                        pdf.printAnagrafica(tmAnagrafica.get(nome),periodo);
+                        pdf.printPartite(array);
+                        pdf.printChiusura();
+                        pdf.newPage();
+                    }
+                }
+            }
             pdf.close();
             printOk("PDF creato correttamente");
         } catch (BadElementException ex) {
@@ -509,96 +516,100 @@ public class Kernel {
     }
 
     public void fireCalcoli(Date begin, Date end) {
-        //tmAnagrafica.keySet().iterator();
+        boolean ok = true;
         calcoli = new HashMap<String, ArrayList<Vector>>();
-        String name = "MIGNOGNA";
-        File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
+        Iterator<String> it = tmAnagrafica.keySet().iterator();
         Xml load = new Xml();
-        try {
+        while (it.hasNext()) {
+            String name = it.next();
             ArrayList<Vector> array = new ArrayList<Vector>();
-            String residenza = tmAnagrafica.get(name).getCity_card();
-            ArrayList<Object[]> dati = load.initializeReaderDesignazioni(file);
-            int tot_km = 0;
-            float tot_rimb = 0, tot_spesedoc = 0, tot_spesenon = 0, tot_partite = 0;
-            Date oldDate = null;
-            try {
-                oldDate = convertStringToDate("01/01/2000");
-            } catch (ParseException ex) {}
-            for (int i=0; i<dati.size(); i++){
-                Object partita[] = dati.get(i);
-                Date data_design = null;
+            File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");            
+            if (file.exists()) {
                 try {
-                    data_design = convertStringToDate(partita[0].toString());
-                } catch (ParseException ex) {}
-                if (data_design.getTime() >= begin.getTime()){
-                    if (data_design.getTime() <= end.getTime()){
-                        Vector v = new Vector();
-                        int km = 0;
-                        float rimb_km = 0, totale_riga = 0;
-                        String localita = partita[2].toString();
-                        boolean car = Boolean.parseBoolean(partita[4].toString());
-                        if (car && !residenza.equalsIgnoreCase(localita) &&
-                                !oldDate.equals(data_design))
-                            km = Integer.parseInt(tmCarta.get(new Carta(residenza, localita))) * 2;
-                        if (km>0){
-                            rimb_km = km * costoKM;
-                            tot_km += km;
-                            tot_rimb += rimb_km;
+                    String residenza = tmAnagrafica.get(name).getCity_card();
+                    ArrayList<Object[]> dati = load.initializeReaderDesignazioni(file);
+                    int tot_km = 0;
+                    float tot_rimb = 0, tot_spesedoc = 0, tot_spesenon = 0, tot_partite = 0;
+                    Date oldDate = null;
+                    try {
+                        oldDate = convertStringToDate("01/01/2000");
+                    } catch (ParseException ex) {}
+                    for (int i=0; i<dati.size(); i++){
+                        Object partita[] = dati.get(i);
+                        Date data_design = null;
+                        try {
+                            data_design = convertStringToDate(partita[0].toString());
+                        } catch (ParseException ex) {}
+                        if (data_design.getTime() >= begin.getTime()){
+                            if (data_design.getTime() <= end.getTime()){
+                                Vector v = new Vector();
+                                int km = 0;
+                                float rimb_km = 0, totale_riga = 0;
+                                String localita = partita[2].toString();
+                                boolean car = Boolean.parseBoolean(partita[4].toString());
+                                if (car && !residenza.equalsIgnoreCase(localita) &&
+                                        !oldDate.equals(data_design))
+                                    km = Integer.parseInt(tmCarta.get(new Carta(residenza, localita))) * 2;
+                                if (km>0){
+                                    rimb_km = km * costoKM;
+                                    tot_km += km;
+                                    tot_rimb += rimb_km;
+                                }
+                                float spesedoc = Float.parseFloat(partita[5].toString());
+                                tot_spesedoc += spesedoc;
+                                boolean referto = Boolean.parseBoolean(partita[6].toString());
+                                float spesenond = Float.parseFloat(partita[7].toString());
+                                if (referto)
+                                    spesenond += costoReferto;
+                                tot_spesenon += spesenond;
+                                //Determino il rimborso forfettario
+                                float rimb_partita = 0;
+                                boolean concentram = Boolean.parseBoolean(partita[3].toString());
+                                if (concentram && !oldDate.equals(data_design))
+                                    rimb_partita = costoDoppiaP;
+                                else if (!concentram && km>limiteKm)
+                                    rimb_partita = costoDoppiaP;
+                                else if (!concentram)
+                                    rimb_partita = costoSingolaP;
+                                tot_partite += rimb_partita;
+                                totale_riga = rimb_km + spesedoc + spesenond + rimb_partita;
+                                oldDate = data_design;
+                                //TODO
+                                v.add(partita[0]); //data
+                                v.add(partita[1]); //designazione
+                                v.add(localita);
+                                v.add(km);
+                                v.add(rimb_km);
+                                v.add(spesedoc);
+                                v.add(spesenond);
+                                v.add(rimb_partita);
+                                v.add(totale_riga);
+                                array.add(v);
+                            } else
+                                break;
                         }
-                        float spesedoc = Float.parseFloat(partita[5].toString());
-                        tot_spesedoc += spesedoc;
-                        boolean referto = Boolean.parseBoolean(partita[6].toString());
-                        float spesenond = Float.parseFloat(partita[7].toString());
-                        if (referto)
-                            spesenond += costoReferto;
-                        tot_spesenon += spesenond;
-                        //Determino il rimborso forfettario
-                        float rimb_partita = 0;
-                        boolean concentram = Boolean.parseBoolean(partita[3].toString());
-                        if (concentram && !oldDate.equals(data_design))
-                            rimb_partita = costoDoppiaP;
-                        else if (!concentram && km>limiteKm)
-                            rimb_partita = costoDoppiaP;
-                        else if (!concentram)
-                            rimb_partita = costoSingolaP;
-                        tot_partite += rimb_partita;
-                        totale_riga = rimb_km + spesedoc + spesenond + rimb_partita;
-                        oldDate = data_design;
-                        //TODO
-                        v.add(partita[0]); //data
-                        v.add(partita[1]); //designazione
-                        v.add(localita);
-                        v.add(km);
-                        v.add(rimb_km);
-                        v.add(spesedoc);
-                        v.add(spesenond);
-                        v.add(rimb_partita);
-                        v.add(totale_riga);
-                        array.add(v);
-                    } else
-                        break;
+                    } //end for
+                    //calcolo TOTALI
+                    float totale = tot_rimb + tot_spesedoc + tot_spesenon + tot_partite;
+                    Vector v = new Vector();
+                    v.add(tot_km);
+                    v.add(tot_rimb);
+                    v.add(tot_spesedoc);
+                    v.add(tot_spesenon);
+                    v.add(tot_partite);
+                    v.add(totale);
+                    array.add(v);
+                    calcoli.put(name, array);
+                } catch (JDOMException ex) {
+                    printError(ex.getMessage());
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    printError(ex.getMessage());
+                    ex.printStackTrace();
                 }
-            } //end for
-            //calcolo TOTALI
-            float totale = tot_rimb + tot_spesedoc + tot_spesenon + tot_partite;
-            Vector v = new Vector();
-            v.add(tot_km);
-            v.add(tot_rimb);
-            v.add(tot_spesedoc);
-            v.add(tot_spesenon);
-            v.add(tot_partite);
-            v.add(totale);
-            array.add(v);
-            calcoli.put(name, array);
-
-            printOk("Calcoli effettuati, puoi procedere con la stampa");
-        } catch (JDOMException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
+            }
         }
+        printOk("Calcoli effettuati, puoi procedere con la stampa");
     }
 
     public String getCurDir() {

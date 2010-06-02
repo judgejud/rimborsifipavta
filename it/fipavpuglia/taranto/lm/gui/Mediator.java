@@ -32,6 +32,8 @@ class Mediator {
             new FileNameExtensionFilter("Excel file", new String[] { "xls", "xlsx" });
     private final FileNameExtensionFilter fnfeZIP =
             new FileNameExtensionFilter("ZIP file", "zip");
+    private final FileNameExtensionFilter fnfePDF =
+            new FileNameExtensionFilter("PDF file", "pdf");
     private List listenerTextPane  = new ArrayList();
     private Object oldArbitro = "";
 
@@ -236,8 +238,11 @@ class Mediator {
         core.testXLS();
     }
 
-    void invokePrintPdf(String from, String to) {
-        core.createPDF(from+"-"+to);
+    void invokePrintPdf(Container parent, String from, String to) {
+        String name = Swing.getFile(parent, "dare un nome al file PDF da generare",
+                fnfePDF, new File(core.getCurDir()));
+        if (name!=null)
+            core.createPDF(name, from+"-"+to);
     }
 
     String getNameTableAnagrafica(){
