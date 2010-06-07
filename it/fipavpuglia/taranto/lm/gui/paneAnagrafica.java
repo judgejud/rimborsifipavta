@@ -1,8 +1,6 @@
 package it.fipavpuglia.taranto.lm.gui;
 
 import java.awt.Component;
-import java.awt.FontMetrics;
-import java.awt.Insets;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -109,16 +107,7 @@ class paneAnagrafica extends paneAbstract{
             //imposta il testo della cella
             String text = value.toString();
             setText(text);
-            //imposta il tooltip della cella
-            int availableWidth = table.getColumnModel().getColumn(column).getWidth();
-            availableWidth -= table.getIntercellSpacing().getWidth();
-            Insets borderInsets = getBorder().getBorderInsets(this);
-            availableWidth -= (borderInsets.left + borderInsets.right);
-            FontMetrics fm = getFontMetrics(getFont());
-            if (fm.stringWidth(text) > availableWidth)
-                setToolTipText(text);
-            else
-                setToolTipText(null);
+            setToolTipText(Swing.getTextToolTip(table, column, this, text));
             this.repaint();
             return this;
         }
