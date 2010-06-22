@@ -114,17 +114,20 @@ class Mediator {
             } else {
                 String residenza_carta = ((String)temp.elementAt(1)).toUpperCase();
                 String ruolo = (String)temp.elementAt(2);
-                String nome = (String)temp.elementAt(3);
-                String sesso = (String)temp.elementAt(4);
-                String data_nascita = (String)temp.elementAt(5);
-                String luogo_nascita = (String)temp.elementAt(6);
-                String codice_fiscale = (String)temp.elementAt(7);
-                String residenza_città = (String)temp.elementAt(8);
-                String indirizzo = (String)temp.elementAt(9);
-                String cap = String.valueOf(temp.elementAt(10));
+                String comitato = (String)temp.elementAt(3);
+                String nome = (String)temp.elementAt(4);
+                String sesso = (String)temp.elementAt(5);
+                String data_nascita = (String)temp.elementAt(6);
+                String luogo_nascita = (String)temp.elementAt(7);
+                String codice_fiscale = (String)temp.elementAt(8);
+                String residenza_città = (String)temp.elementAt(9);
+                String indirizzo = (String)temp.elementAt(10);
+                String cap = String.valueOf(temp.elementAt(11));
+                String assegno = String.valueOf(temp.elementAt(12));
                 
                 Anagrafica a = new Anagrafica(nome, luogo_nascita, data_nascita, codice_fiscale,
-                        residenza_città, indirizzo, cap, ruolo, sesso, residenza_carta);
+                        residenza_città, indirizzo, cap, ruolo, sesso, residenza_carta, comitato,
+                        assegno);
                 
                 tm.put(code, a);
             }

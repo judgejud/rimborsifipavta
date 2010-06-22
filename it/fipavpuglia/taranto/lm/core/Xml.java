@@ -33,6 +33,8 @@ class Xml {
     private final String TAG_ANAGRAFICA_CITTA = "RESIDENZA";
     private final String TAG_ANAGRAFICA_INDIRIZZO = "INDIRIZZO";
     private final String TAG_ANAGRAFICA_CAP = "CAP";
+    private final String TAG_ANAGRAFICA_COMITATO = "COMITATO";
+    private final String TAG_ANAGRAFICA_ASSEGNO = "ASSEGNO";
     private final String TAG_CARTA_PAESE1 = "PAESE1";
     private final String TAG_CARTA_PAESE2 = "PAESE2";
     private final String TAG_CARTA_KM = "KM";
@@ -120,6 +122,8 @@ class Xml {
         paese.setText(value.getCity_card());
         Element ruolo = new Element(TAG_ANAGRAFICA_RUOLO);
         ruolo.setText(value.getRole());
+        Element comitato = new Element(TAG_ANAGRAFICA_COMITATO);
+        comitato.setText(value.getGroup());
         Element nome = new Element(TAG_ANAGRAFICA_NOME);
         nome.setText(value.getSurname_name());
         Element data = new Element(TAG_ANAGRAFICA_DATAN);
@@ -136,10 +140,13 @@ class Xml {
         indirizzo.setText(value.getAddress());
         Element cap = new Element(TAG_ANAGRAFICA_CAP);
         cap.setText(value.getCap());
+        Element assegno = new Element(TAG_ANAGRAFICA_ASSEGNO);
+        assegno.setText(value.getAssegno());
         item.addContent(codice);
         item.addContent(paese);
-        item.addContent(nome);
         item.addContent(ruolo);
+        item.addContent(comitato);
+        item.addContent(nome);
         item.addContent(data);
         item.addContent(luogo);
         item.addContent(sesso);
@@ -147,6 +154,7 @@ class Xml {
         item.addContent(città);
         item.addContent(indirizzo);
         item.addContent(cap);
+        item.addContent(assegno);
         root.addContent(item);
     }
     /*
@@ -277,6 +285,7 @@ class Xml {
                     String codice = getItemXml(role, TAG_ANAGRAFICA_CODICE).toUpperCase();
                     String paese = getItemXml(role, TAG_ANAGRAFICA_PAESE).toUpperCase();
                     String ruolo = getItemXml(role, TAG_ANAGRAFICA_RUOLO);
+                    String comitato = getItemXml(role, TAG_ANAGRAFICA_COMITATO);
                     String nome = getItemXml(role, TAG_ANAGRAFICA_NOME);
                     String luogo = getItemXml(role, TAG_ANAGRAFICA_LUOGON);
                     String data = getItemXml(role, TAG_ANAGRAFICA_DATAN);
@@ -285,11 +294,12 @@ class Xml {
                     String resid = getItemXml(role, TAG_ANAGRAFICA_CITTA);
                     String indirizzo = getItemXml(role, TAG_ANAGRAFICA_INDIRIZZO);
                     String cap = getItemXml(role, TAG_ANAGRAFICA_CAP);
-                    String[] temp = {codice, paese, ruolo, nome, sesso, data, luogo, codfis,
-                                    resid, indirizzo, cap};
+                    String assegno = getItemXml(role, TAG_ANAGRAFICA_ASSEGNO);
+                    Object[] temp = {codice, paese, ruolo, comitato, nome, sesso, data, luogo, codfis,
+                                    resid, indirizzo, cap, Boolean.parseBoolean(assegno)};
                     array.add(temp);
                     Anagrafica a = new Anagrafica(nome, luogo, data, codfis, resid, indirizzo, 
-                            cap, ruolo, sesso, paese);
+                            cap, ruolo, sesso, paese, comitato, assegno);
                     tmAnagrafica.put(codice, a);
                 }                
             }
