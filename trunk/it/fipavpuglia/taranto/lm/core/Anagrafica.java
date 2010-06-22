@@ -14,10 +14,12 @@ public class Anagrafica {
     private String role;
     private String sex;
     private String city_card;
+    private String group;
+    private String assegno;
 
     public Anagrafica(String surname_name, String city_born, String date_born,
             String fiscal_code, String city_residence, String address, String cap,
-            String role, String sex, String city_card) {
+            String role, String sex, String city_card, String group, String assegno) {
         this.surname_name = surname_name;
         this.city_born = city_born;
         this.date_born = date_born;
@@ -28,6 +30,8 @@ public class Anagrafica {
         this.role = role;
         this.sex = sex;
         this.city_card = city_card;
+        this.group = group;
+        this.assegno = assegno;
     }
 
     public String getAddress() {
@@ -108,5 +112,21 @@ public class Anagrafica {
 
     public void setSurname_name(String surname_name) {
         this.surname_name = surname_name;
+    }
+
+    public String getAssegno() {
+        return assegno;
+    }
+
+    public void setAssegno(String assegno) {
+        this.assegno = assegno;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }
