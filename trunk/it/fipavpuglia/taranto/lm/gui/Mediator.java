@@ -1,6 +1,7 @@
 package it.fipavpuglia.taranto.lm.gui;
 
-import it.fipavpuglia.taranto.lm.core.Anagrafica;
+import it.fipavpuglia.taranto.lm.core.AnagraficaFipav;
+import it.fipavpuglia.taranto.lm.core.AnagraficaPersona;
 import it.fipavpuglia.taranto.lm.core.Carta;
 import it.fipavpuglia.taranto.lm.core.Kernel;
 import it.fipavpuglia.taranto.lm.gui.events.*;
@@ -20,7 +21,7 @@ import java.util.Vector;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.lp.myUtils.Swing;
+import org.jfacility.swing.Swing;
 /**
  *
  * @author luca
@@ -59,17 +60,23 @@ class Mediator {
     }
 
     void invokeTestDestinations(Component parent) {
+        /*
         String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
                 fnfeXLS, new File(core.getCurDir()));
         if (name!=null)
             core.testDestinations(new File(name));
+         *
+         */
     }
 
-    void invokeRimborsi(Component parent) {        
+    void invokeRimborsi(Component parent) {
+        /*
         String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
                 fnfeXLS, new File(core.getCurDir()));
         if (name!=null)
             core.writeRimborsi(new File(name));
+         *
+         */
     }
 
     void invokeBackupXml(Component parent) {
@@ -100,8 +107,40 @@ class Mediator {
         return s;
     }
 
-    void saveAnagrafica(Vector dataVector) {
-        TreeMap<String, Anagrafica> tm = new TreeMap<String, Anagrafica>();
+    void saveAnagraficaPersona(Vector dataVector) {
+        TreeMap<String, AnagraficaPersona> tm = new TreeMap<String, AnagraficaPersona>();
+        boolean _break = false;
+        String code="";
+        for (int i=0; i<dataVector.size(); i++){
+            Vector temp = (Vector)dataVector.elementAt(i);
+            code = ((String)temp.elementAt(0)).toUpperCase();
+            if (tm.containsKey(code)){
+                _break=true;
+                printAlert("Trovato doppione: " + code);
+                break;
+            } else {
+                String nome = (String)temp.elementAt(1);
+                String sesso = (String)temp.elementAt(2);
+                String data_nascita = (String)temp.elementAt(3);
+                String luogo_nascita = (String)temp.elementAt(4);
+                String codice_fiscale = (String)temp.elementAt(5);
+                String residenza_città = (String)temp.elementAt(6);
+                String indirizzo = (String)temp.elementAt(7);
+                String cap = String.valueOf(temp.elementAt(8));
+                
+                AnagraficaPersona a = new AnagraficaPersona(nome, luogo_nascita,
+                        data_nascita, codice_fiscale, residenza_città,
+                        indirizzo, cap, sesso);
+                
+                tm.put(code, a);
+            }
+        }
+        if (!_break)
+            core.saveAnagraficaPersona(tm);
+    }
+
+    void saveAnagraficaFipav(Vector dataVector) {
+        TreeMap<String, AnagraficaFipav> tm = new TreeMap<String, AnagraficaFipav>();
         boolean _break = false;
         String code="";
         for (int i=0; i<dataVector.size(); i++){
@@ -114,26 +153,17 @@ class Mediator {
             } else {
                 String residenza_carta = ((String)temp.elementAt(1)).toUpperCase();
                 String ruolo = (String)temp.elementAt(2);
-                String comitato = (String)temp.elementAt(3);
-                String nome = (String)temp.elementAt(4);
-                String sesso = (String)temp.elementAt(5);
-                String data_nascita = (String)temp.elementAt(6);
-                String luogo_nascita = (String)temp.elementAt(7);
-                String codice_fiscale = (String)temp.elementAt(8);
-                String residenza_città = (String)temp.elementAt(9);
-                String indirizzo = (String)temp.elementAt(10);
-                String cap = String.valueOf(temp.elementAt(11));
+                String comitato = (String)temp.elementAt(3);                
                 String assegno = String.valueOf(temp.elementAt(12));
-                
-                Anagrafica a = new Anagrafica(nome, luogo_nascita, data_nascita, codice_fiscale,
-                        residenza_città, indirizzo, cap, ruolo, sesso, residenza_carta, comitato,
+
+                AnagraficaFipav a = new AnagraficaFipav(ruolo, residenza_carta, comitato,
                         assegno);
-                
+
                 tm.put(code, a);
             }
         }
         if (!_break)
-            core.saveAnagrafica(tm);
+            core.saveAnagraficaFipav(tm);
     }
 /*
     void saveEccezioni(Vector dataVector) {
@@ -196,10 +226,13 @@ class Mediator {
     }
 
     void invokeTestArbitri(Container parent) {
+        /*
         String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
                 fnfeXLS, new File(core.getCurDir()));
         if (name!=null)
             core.testArbitri(new File(name));
+         *
+         */
     }    
 
     void saveOption(Vector dataVector) {
@@ -238,7 +271,7 @@ class Mediator {
     }    
 
     void testXLS() {
-        core.testXLS();
+        
     }
 
     void invokePrintPdf(Container parent, String from, String to) {
@@ -248,14 +281,14 @@ class Mediator {
             core.createPDF(name, from+"-"+to);
     }
 
-    String getNameTableAnagrafica(){
-        return core.getTABLE_ANAGRAFICA();
+    String getNameTableAnagraficaPersona(){
+        return core.getTABLE_ANAGRAFICA_PERSONA();
     }
-    /*
-    String getNameTableEcccezioni(){
-        return core.getTABLE_ECCEZIONI();
+
+    String getNameTableAnagraficaFipav(){
+        return core.getTABLE_ANAGRAFICA_FIPAV();
     }
-    */
+    
     String getNameTableCarta(){
         return core.getTABLE_CARTA();
     }
