@@ -17,7 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import org.lp.myUtils.lang.Lang;
+import org.jfacility.lang.MySystem;
 /**
  *
  * @author luca
@@ -30,7 +30,8 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private Mediator proxy = Mediator.getInstance();
     private JTabbedPane jtabbedpane;
     private textpaneLog jtpLog;
-    private paneAnagrafica jpAnagrafica;
+    private paneAnagraficaPersona jpAnagraficaPersona;
+    private paneAnagraficaFipav jpAnagraficaFipav;
     private paneCarta jpCarta;
     //private paneEccezioni jpEccezioni;
     private panePartite jpPartite;
@@ -51,14 +52,16 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         add(jScrollText1, BorderLayout.SOUTH);        
         proxy.setTextPaneListener(jtpLog);
         addWindowListener(this);
-        jtpLog.appendOK("Versione java in uso: " + Lang.getJavaVersion());
+        jtpLog.appendOK("Versione java in uso: " + MySystem.getJavaVersion());
     }
 
     private void initTabPanel(){
         jtabbedpane = new JTabbedPane();
         jtabbedpane.setPreferredSize(TABBEDSIZE);
-        jpAnagrafica = paneAnagrafica.getPanel();
-        jtabbedpane.addTab("Anagrafica", jpAnagrafica);
+        jpAnagraficaPersona = paneAnagraficaPersona.getPanel();
+        jtabbedpane.addTab("Anagrafica Persona", jpAnagraficaPersona);
+        jpAnagraficaFipav = paneAnagraficaFipav.getPanel();
+        jtabbedpane.addTab("Anagrafica Fipav", jpAnagraficaFipav);
         //jpEccezioni = paneEccezioni.getPanel();
         //jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
@@ -151,8 +154,10 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     }
     @Override
     public void objReceived(MyFrameEvent evt) {
-        if (evt.getNameDest().equals(proxy.getNameTableAnagrafica()))
-            jpAnagrafica.addRows(evt.getArrayList());
+        if (evt.getNameDest().equals(proxy.getNameTableAnagraficaPersona()))
+            jpAnagraficaPersona.addRows(evt.getArrayList());
+        else if(evt.getNameDest().equals(proxy.getNameTableAnagraficaFipav()))
+            jpAnagraficaFipav.addRows(evt.getArrayList());
         else if (evt.getNameDest().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArrayList());
         else if (evt.getNameDest().equals(proxy.getNameTableOptions()))
