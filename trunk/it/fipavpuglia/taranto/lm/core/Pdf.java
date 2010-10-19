@@ -89,7 +89,8 @@ public class Pdf {
         documento.add(tableIntestazione);
     }
     
-    void printAnagrafica(Anagrafica ana, String periodo) throws FileNotFoundException,
+    void printAnagrafica(AnagraficaPersona ana, AnagraficaFipav fipav, String periodo)
+            throws FileNotFoundException,
             DocumentException{
         float[] colsWidth = {0.8f, 2f, 0.5f, 2f, 0.2f, 1f, 1f, 2f};
         PdfPTable tabella = new PdfPTable(colsWidth);
@@ -154,7 +155,7 @@ public class Pdf {
         cellText.setHorizontalAlignment(Element.ALIGN_LEFT);
         cellText.setBorder(0);
         tabella.addCell(cellText);
-        cellAnag = new PdfPCell(new Phrase(ana.getRole(), arial10b));
+        cellAnag = new PdfPCell(new Phrase(fipav.getRole(), arial10b));
         cellAnag.setHorizontalAlignment(Element.ALIGN_LEFT);
         cellAnag.setBorder(0);
         tabella.addCell(cellAnag);

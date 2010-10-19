@@ -37,9 +37,7 @@ class Xml {
     private final String TAG_ANAGRAFICA_ASSEGNO = "ASSEGNO";
     private final String TAG_CARTA_PAESE1 = "PAESE1";
     private final String TAG_CARTA_PAESE2 = "PAESE2";
-    private final String TAG_CARTA_KM = "KM";
-    //private final String TAG_ECCEZIONI_NOME = "NOME";
-    //private final String TAG_ECCEZIONI_DATA = "DATA";
+    private final String TAG_CARTA_KM = "KM";    
     private final String TAG_OPTION_KM = "COSTO_KM";
     private final String TAG_OPTION_SINGLE = "COSTO_SINGLE";
     private final String TAG_OPTION_DUAL = "COSTO_DUAL";
@@ -53,42 +51,40 @@ class Xml {
     private final String TAG_DESIGNAZIONI_CONCENTRAMENTO = "CONCENTRAMENTO";
     private final String TAG_DESIGNAZIONI_SPESEDOC = "SPESE_DOCUMENTATE";
     private final String TAG_DESIGNAZIONI_SPESENON = "SPESE_NON_DOCUM";
-
     //VARIABLES PRIVATE
     private Element root;
-    private Document jdomCarta, jdomAnagrafica, jdomDesignazioni, jdomOptions;
-    //private Document jdomEccezioni;
-    private TreeMap<String, Anagrafica> tmAnagrafica = null;
+    private Document jdomCarta, jdomAnagraficaPersona, jdomAnagraficaFipav,
+            jdomDesignazioni, jdomOptions;
+    private TreeMap<String, AnagraficaPersona> tmAnagraficaPersona = null;
+    private TreeMap<String, AnagraficaFipav> tmAnagraficaFipav = null;
     private TreeMap<Carta, String> tmCarta = null;
     private TreeSet<String> tsCarta;
-    //private TreeMap<String, TreeSet<Date>> tmEccezioni = null;
+
     /**inizializza il documento Carta per la scrittura */
     void initializeWriterCarta(){
         root = new Element(TAG_ROOT);
         jdomCarta = new Document(root);
     }
-    /**inizializza il documento Arbitri per la scrittura */
-    void initializeWriterAnagrafica(){
+    /**inizializza il documento AnagraficaPersona per la scrittura */
+    void initializeWriterAnagraficaPersona(){
         root = new Element(TAG_ROOT);
-        jdomAnagrafica = new Document(root);
-    }
-    /**inizializza il documento Eccezioni per la scrittura */
-    /*
-    void initializeWriterEccezioni(){
+        jdomAnagraficaPersona = new Document(root);
+    }    
+    /**inizializza il documento AnagraficaFipav per la scrittura */
+    void initializeWriterAnagraficaFipav(){
         root = new Element(TAG_ROOT);
-        jdomEccezioni = new Document(root);
+        jdomAnagraficaPersona = new Document(root);
     }
-    /**inizializza il documento Eccezioni per la scrittura */
+    /**inizializza il documento Opzioni per la scrittura */
     void initializeWriterOptions() {
         root = new Element(TAG_ROOT);
         jdomOptions = new Document(root);
     }    
-    /**inizializza il documento Eccezioni per la scrittura */
+    /**inizializza il documento Designazioni per la scrittura */
     void initializeWriterDesignazioni() {
         root = new Element(TAG_ROOT);
         jdomDesignazioni = new Document(root);
     }
-
 
     /**
      *
@@ -114,16 +110,10 @@ class Xml {
      * @param key
      * @param value
      */
-    void addItemAnagrafica(String key, Anagrafica value) {
+    void addItemAnagraficaPersona(String key, AnagraficaPersona value) {
         Element item = new Element(TAG_ITEM);
         Element codice = new Element(TAG_ANAGRAFICA_CODICE);
-        codice.setText(key);
-        Element paese = new Element(TAG_ANAGRAFICA_PAESE);
-        paese.setText(value.getCity_card());
-        Element ruolo = new Element(TAG_ANAGRAFICA_RUOLO);
-        ruolo.setText(value.getRole());
-        Element comitato = new Element(TAG_ANAGRAFICA_COMITATO);
-        comitato.setText(value.getGroup());
+        codice.setText(key);        
         Element nome = new Element(TAG_ANAGRAFICA_NOME);
         nome.setText(value.getSurname_name());
         Element data = new Element(TAG_ANAGRAFICA_DATAN);
@@ -140,12 +130,7 @@ class Xml {
         indirizzo.setText(value.getAddress());
         Element cap = new Element(TAG_ANAGRAFICA_CAP);
         cap.setText(value.getCap());
-        Element assegno = new Element(TAG_ANAGRAFICA_ASSEGNO);
-        assegno.setText(value.getAssegno());
-        item.addContent(codice);
-        item.addContent(paese);
-        item.addContent(ruolo);
-        item.addContent(comitato);
+        item.addContent(codice);        
         item.addContent(nome);
         item.addContent(data);
         item.addContent(luogo);
@@ -154,21 +139,36 @@ class Xml {
         item.addContent(città);
         item.addContent(indirizzo);
         item.addContent(cap);
+        root.addContent(item);
+    }
+    /**
+     *
+     * @param key
+     * @param value
+     */
+    void addItemAnagraficaFipav(String key, AnagraficaFipav value) {
+        Element item = new Element(TAG_ITEM);
+        Element codice = new Element(TAG_ANAGRAFICA_CODICE);
+        codice.setText(key);
+        Element paese = new Element(TAG_ANAGRAFICA_PAESE);
+        paese.setText(value.getCity_card());
+        Element ruolo = new Element(TAG_ANAGRAFICA_RUOLO);
+        ruolo.setText(value.getRole());
+        Element comitato = new Element(TAG_ANAGRAFICA_COMITATO);
+        comitato.setText(value.getGroup());
+        Element assegno = new Element(TAG_ANAGRAFICA_ASSEGNO);
+        assegno.setText(value.getAssegno());
+        item.addContent(codice);
+        item.addContent(paese);
+        item.addContent(ruolo);
+        item.addContent(comitato);
         item.addContent(assegno);
         root.addContent(item);
     }
-    /*
-    void addItemEccezione(String key, String value) {
-        Element item = new Element(TAG_ITEM);
-        Element nome = new Element(TAG_ECCEZIONI_NOME);
-        nome.setText(key);
-        Element data = new Element(TAG_ECCEZIONI_DATA);
-        data.setText(value);
-        item.addContent(nome);
-        item.addContent(data);
-        root.addContent(item);
-    }*/
-
+    /**
+     *
+     * @param costo
+     */
     void addItemOption(float[] costo) {
         Element item = new Element(TAG_ITEM);
         Element km = new Element(TAG_OPTION_KM);
@@ -233,8 +233,15 @@ class Xml {
      *
      * @throws IOException
      */
-    void writeAnagrafica(File xml) throws IOException{
-        write().output(jdomAnagrafica, new FileOutputStream(xml));
+    void writeAnagraficaPersona(File xml) throws IOException{
+        write().output(jdomAnagraficaPersona, new FileOutputStream(xml));
+    }
+    /**Scrive l'xml arbitri
+     *
+     * @throws IOException
+     */
+    void writeAnagraficaFipav(File xml) throws IOException{
+        write().output(jdomAnagraficaFipav, new FileOutputStream(xml));
     }
     /**Scrive l'xml eccezioni
      *
@@ -269,23 +276,21 @@ class Xml {
      * @throws JDOMException
      * @throws IOException
      */
-    ArrayList<Object[]> initializeReaderAnagrafica(File xml) throws JDOMException,
+    ArrayList<Object[]> initializeReaderAnagraficaPersona(File xml) throws JDOMException,
                 IOException{
         ArrayList<Object[]> array = null;
         if (xml.exists()){
             //Creo un SAXBuilder e con esso costruisco un document
-            jdomAnagrafica = new SAXBuilder().build(xml);
-            int size = jdomAnagrafica.getRootElement().getChildren().size();
+            jdomAnagraficaPersona = new SAXBuilder().build(xml);
+            int size = jdomAnagraficaPersona.getRootElement().getChildren().size();
             if (size>0){
-                tmAnagrafica = new TreeMap<String, Anagrafica>();
+                tmAnagraficaPersona = new TreeMap<String, AnagraficaPersona>();
                 array = new ArrayList<Object[]>();
-                Iterator iterator = jdomAnagrafica.getRootElement().getChildren().iterator();
+                Iterator iterator = jdomAnagraficaPersona.getRootElement().getChildren().
+                        iterator();
                 while(iterator.hasNext()){
                     Element role = (Element)iterator.next();
                     String codice = getItemXml(role, TAG_ANAGRAFICA_CODICE).toUpperCase();
-                    String paese = getItemXml(role, TAG_ANAGRAFICA_PAESE).toUpperCase();
-                    String ruolo = getItemXml(role, TAG_ANAGRAFICA_RUOLO);
-                    String comitato = getItemXml(role, TAG_ANAGRAFICA_COMITATO);
                     String nome = getItemXml(role, TAG_ANAGRAFICA_NOME);
                     String luogo = getItemXml(role, TAG_ANAGRAFICA_LUOGON);
                     String data = getItemXml(role, TAG_ANAGRAFICA_DATAN);
@@ -294,14 +299,48 @@ class Xml {
                     String resid = getItemXml(role, TAG_ANAGRAFICA_CITTA);
                     String indirizzo = getItemXml(role, TAG_ANAGRAFICA_INDIRIZZO);
                     String cap = getItemXml(role, TAG_ANAGRAFICA_CAP);
-                    String assegno = getItemXml(role, TAG_ANAGRAFICA_ASSEGNO);
-                    Object[] temp = {codice, paese, ruolo, comitato, nome, sesso, data, luogo, codfis,
-                                    resid, indirizzo, cap, Boolean.parseBoolean(assegno)};
+                    Object[] temp = {codice, nome, sesso, data, luogo, codfis,
+                                    resid, indirizzo, cap};
                     array.add(temp);
-                    Anagrafica a = new Anagrafica(nome, luogo, data, codfis, resid, indirizzo, 
-                            cap, ruolo, sesso, paese, comitato, assegno);
-                    tmAnagrafica.put(codice, a);
+                    AnagraficaPersona a = new AnagraficaPersona(nome, luogo, data, codfis, 
+                            resid, indirizzo, cap, sesso);
+                    tmAnagraficaPersona.put(codice, a);
                 }                
+            }
+        }
+        return array;
+    }
+    /**
+     *
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     */
+    ArrayList<Object[]> initializeReaderAnagraficaFipav(File xml) throws JDOMException,
+                IOException{
+        ArrayList<Object[]> array = null;
+        if (xml.exists()){
+            //Creo un SAXBuilder e con esso costruisco un document
+            jdomAnagraficaFipav = new SAXBuilder().build(xml);
+            int size = jdomAnagraficaFipav.getRootElement().getChildren().size();
+            if (size>0){
+                tmAnagraficaFipav = new TreeMap<String, AnagraficaFipav>();
+                array = new ArrayList<Object[]>();
+                Iterator iterator = jdomAnagraficaFipav.getRootElement().getChildren()
+                        .iterator();
+                while(iterator.hasNext()){
+                    Element role = (Element)iterator.next();
+                    String codice = getItemXml(role, TAG_ANAGRAFICA_CODICE).toUpperCase();
+                    String paese = getItemXml(role, TAG_ANAGRAFICA_PAESE).toUpperCase();
+                    String ruolo = getItemXml(role, TAG_ANAGRAFICA_RUOLO);
+                    String comitato = getItemXml(role, TAG_ANAGRAFICA_COMITATO);                    
+                    String assegno = getItemXml(role, TAG_ANAGRAFICA_ASSEGNO);
+                    Object[] temp = {codice, paese, ruolo, comitato,
+                        Boolean.parseBoolean(assegno)};
+                    array.add(temp);
+                    AnagraficaFipav a = new AnagraficaFipav(ruolo, paese, comitato, assegno);
+                    tmAnagraficaFipav.put(codice, a);
+                }
             }
         }
         return array;
@@ -349,38 +388,11 @@ class Xml {
     }
     /**
      *
+     * @param xml
      * @return
      * @throws JDOMException
      * @throws IOException
      */
-    /*
-    ArrayList<String[]> initializeReaderEccezioni(File xml) throws JDOMException, IOException,
-            ParseException{
-        ArrayList<String[]> array = null;
-        if (xml.exists()){
-            //Creo un SAXBuilder e con esso costruisco un document
-            jdomEccezioni = new SAXBuilder().build(xml);
-            int size = jdomEccezioni.getRootElement().getChildren().size();
-            if (size>0){
-                array = new ArrayList<String[]>();
-                tmEccezioni = new TreeMap<String, TreeSet<Date>>();
-                Iterator iterator = jdomEccezioni.getRootElement().getChildren().iterator();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-                while(iterator.hasNext()){
-                    Element role = (Element)iterator.next();
-                    String arbitro = role.getChild(TAG_ECCEZIONI_NOME).getText().toUpperCase();
-                    String data = role.getChild(TAG_ECCEZIONI_DATA).getText();
-                    String[] temp = {arbitro, data};
-                    array.add(temp);
-                    if (!tmEccezioni.containsKey(arbitro))
-                        tmEccezioni.put(arbitro, new TreeSet<Date>());
-                    tmEccezioni.get(arbitro).add(sdf.parse(data));
-                }
-            }
-        }
-        return array;
-    }*/
-
     ArrayList<Object> initializeReaderOpzioni(File xml) throws JDOMException, IOException{
         ArrayList<Object> array = null;
         if (xml.exists()){
@@ -442,8 +454,15 @@ class Xml {
      *
      * @return
      */
-    TreeMap<String, Anagrafica> getMapAnagrafica() {
-        return tmAnagrafica;
+    TreeMap<String, AnagraficaPersona> getMapAnagraficaPersona() {
+        return tmAnagraficaPersona;
+    }
+    /**
+     *
+     * @return
+     */
+    TreeMap<String, AnagraficaFipav> getMapAnagraficaFipav() {
+        return tmAnagraficaFipav;
     }
     /**
      *
@@ -455,14 +474,5 @@ class Xml {
 
     TreeSet<String> getSetCarta(){
         return tsCarta;
-    }
-    /**
-     *
-     * @return
-     */
-    /*
-    TreeMap<String, TreeSet<Date>> getMapEccezioni() {
-        return tmEccezioni;
-    }
-    */
+    }    
 }

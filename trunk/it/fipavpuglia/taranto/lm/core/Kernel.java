@@ -2,7 +2,6 @@ package it.fipavpuglia.taranto.lm.core;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -14,43 +13,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import it.fipavpuglia.taranto.lm.gui.events.*;
-
-import org.lp.myUtils.Util;
-import org.lp.myUtils.lang.Lang;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.DocumentException;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import org.jdom.JDOMException;
+
+import org.jfacility.lang.MySystem;
+import org.jfacility.Util;
 /**
  *
  * @author luca
  */
 public class Kernel {    
     private static Kernel core = null;
-    private final String TABLE_ANAGRAFICA="Anagrafica";
+    private final String TABLE_ANAGRAFICA_PERSONA="AnagraficaPersona";
+    private final String TABLE_ANAGRAFICA_FIPAV="AnagraficaFipav";
     private final String TABLE_DESIGNAZIONI="Designazioni";
     private final String TABLE_CARTA="Carta";
     private final String TABLE_OPZIONI="Opzioni";
     private final String COMBO_ARBITRI="Arbitri";
     private final String COMBO_LOCALITA="Localita";
     private final String DESIGNAZIONI_DIR = "designazioni" + File.separator;
-    //private final String TABLE_ECCEZIONI="Eccezioni";
     private final File XML_CARTA = new File("cartapolimetrica.xml");
-    private final File XML_ANAGRAFICA = new File("anagrafica.xml");
-    //private final File XML_ECCEZIONI = new File("eccezioni.xml");
+    private final File XML_ANAGRAFICA_PERSONA = new File("anagraficapersona.xml");
+    private final File XML_ANAGRAFICA_FIPAV = new File("anagraficafipav.xml");
     private final File XML_OPZIONI = new File("opzioni.xml");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
     private float costoKM, costoSingolaP, costoDoppiaP, costoReferto, limiteKm;
@@ -58,14 +55,15 @@ public class Kernel {
     private List listenerTextPane = new ArrayList();
     private List listenerFrame = new ArrayList();
 
-    private TreeMap<String, Anagrafica> tmAnagrafica;
+    private TreeMap<String, AnagraficaPersona> tmAnagraficaPersona = null;
+    private TreeMap<String, AnagraficaFipav> tmAnagraficaFipav = null;
     private TreeMap<Carta, String> tmCarta;
-    private TreeMap<String, TreeSet<Date>> tmEccezioni;
+    //private TreeMap<String, TreeSet<Date>> tmEccezioni;
     private HashMap<String, ArrayList<Vector>> calcoli;
 
     /**Costruttore privato*/
     private Kernel(){
-        curDir = Lang.getFileUserDir().toURI().getPath();
+        curDir = MySystem.getFileUserDir().toURI().getPath();
     }
 
     public static Kernel getInstance(){
@@ -77,12 +75,19 @@ public class Kernel {
     void loadXML() {
         Xml load = new Xml();
         try {
-            fireNewFrameEvent(TABLE_ANAGRAFICA, load.initializeReaderAnagrafica(XML_ANAGRAFICA));
-            tmAnagrafica = load.getMapAnagrafica();
-            fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
-            fireNewFrameEvent(TABLE_CARTA, load.initializeReaderCarta(XML_CARTA));
-            fireNewFrameEvent(COMBO_LOCALITA, load.getSetCarta().toArray());
-            tmCarta = load.getMapCarta();
+            ArrayList<Object[]> temp = 
+                    load.initializeReaderAnagraficaPersona(XML_ANAGRAFICA_PERSONA);
+            if (temp!=null) {
+                fireNewFrameEvent(TABLE_ANAGRAFICA_PERSONA, temp);
+                tmAnagraficaPersona = load.getMapAnagraficaPersona();
+                fireNewFrameEvent(COMBO_ARBITRI, tmAnagraficaPersona.keySet().toArray());
+            }
+            temp = load.initializeReaderCarta(XML_CARTA);
+            if (temp!=null) {
+                fireNewFrameEvent(TABLE_CARTA, temp);
+                fireNewFrameEvent(COMBO_LOCALITA, load.getSetCarta().toArray());
+                tmCarta = load.getMapCarta();
+            }
             ArrayList<Object> opt = load.initializeReaderOpzioni(XML_OPZIONI);
             if (opt!=null){
                 costoKM = ((Float)opt.get(0)).floatValue();
@@ -91,9 +96,7 @@ public class Kernel {
                 costoReferto = ((Float)opt.get(3)).floatValue();
                 limiteKm = ((Float)opt.get(4)).floatValue();
                 fireNewFrameEvent(TABLE_OPZIONI, opt.toArray());
-            }
-            //fireNewFrameEvent(TABLE_ECCEZIONI,temp.initializeReaderEccezioni(XML_ECCEZIONI));
-            //tmEccezioni = temp.getMapEccezioni();
+            }            
         } catch (JDOMException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
@@ -157,7 +160,7 @@ public class Kernel {
             ex.printStackTrace();
         }
     }
-
+/*
     public void testArbitri(File file) {
         try {            
             Workbook workBook = WorkbookFactory.create(new FileInputStream(file));
@@ -166,7 +169,7 @@ public class Kernel {
                 Sheet sheet = workBook.getSheetAt(i);
                 String arbitro = sheet.getSheetName().toUpperCase();
                 String residenza = null;
-                if (!tmAnagrafica.containsKey(arbitro)){
+                if (!tmAnagraficaPersona.containsKey(arbitro)){
                     test = false;
                     residenza = sheet.getRow(5).getCell(5).getStringCellValue();
                     printAlert("Arbitro assente nell'xml: " + arbitro + " - " + residenza);
@@ -224,8 +227,8 @@ public class Kernel {
 
     private void analyzeSheet(Sheet sheet) throws NumberFormatException, IOException{
         String arbitro = sheet.getSheetName().toUpperCase();
-        if (tmAnagrafica.containsKey(arbitro)){
-            String residenza = tmAnagrafica.get(arbitro).getCity_card();
+        if (tmAnagraficaPersona.containsKey(arbitro)){
+            String residenza = tmAnagraficaPersona.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             Date oldData = new Date(0);
             Iterator<Date> it = null;
@@ -275,7 +278,7 @@ public class Kernel {
     private boolean testSheet(Sheet sheet) {
         String arbitro = sheet.getSheetName().toUpperCase();
         boolean verify = true;
-        if (tmAnagrafica.containsKey(arbitro)){
+        if (tmAnagraficaPersona.containsKey(arbitro)){
             String residenza = tmAnagrafica.get(arbitro).getCity_card();
             Iterator<Row> rows = sheet.rowIterator();
             while (rows.hasNext()){
@@ -300,22 +303,45 @@ public class Kernel {
         } //end if residenza
         return verify;
     }
-
-    public void saveAnagrafica(TreeMap<String, Anagrafica> tm) {
+*/
+    public void saveAnagraficaPersona(TreeMap<String, AnagraficaPersona> tm) {
         if (tm.size()>0){
             try {
                 Xml save = new Xml();
                 Iterator<String> it = tm.keySet().iterator();
-                save.initializeWriterAnagrafica();
+                save.initializeWriterAnagraficaPersona();
                 while (it.hasNext()) {
                     String key = it.next();
-                    Anagrafica value = tm.get(key);
-                    save.addItemAnagrafica(key, value);
+                    AnagraficaPersona value = tm.get(key);
+                    save.addItemAnagraficaPersona(key, value);
                 }
-                save.writeAnagrafica(XML_ANAGRAFICA);
-                printOk("XML anagrafica aggiornato");
-                tmAnagrafica = tm;
-                fireNewFrameEvent(COMBO_ARBITRI, tmAnagrafica.keySet().toArray());
+                save.writeAnagraficaPersona(XML_ANAGRAFICA_PERSONA);
+                printOk("XML dati personali arbitro aggiornato");
+                tmAnagraficaPersona = tm;
+                //TODO: fare altro fire per la combo arbitri nella parte dati fipav arbitri
+                fireNewFrameEvent(COMBO_ARBITRI, tmAnagraficaPersona.keySet().toArray());
+            } catch (IOException ex) {
+                printError(ex.getMessage());
+                ex.printStackTrace();
+            }
+        } else
+            printAlert("non ho elementi da salvare nell'xml anagrafica");
+    }
+
+    public void saveAnagraficaFipav(TreeMap<String, AnagraficaFipav> tm) {
+        if (tm.size()>0){
+            try {
+                Xml save = new Xml();
+                Iterator<String> it = tm.keySet().iterator();
+                save.initializeWriterAnagraficaFipav();
+                while (it.hasNext()) {
+                    String key = it.next();
+                    AnagraficaFipav value = tm.get(key);
+                    save.addItemAnagraficaFipav(key, value);
+                }
+                save.writeAnagraficaFipav(XML_ANAGRAFICA_FIPAV);
+                printOk("XML dati fipav arbitro aggiornato");
+                tmAnagraficaFipav = tm;
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
@@ -345,44 +371,15 @@ public class Kernel {
         } else
             printAlert("non ho elementi da salvare nell'xml Carta polimetrica");
     }
-/*
-    public void saveEccezioni(TreeMap<String, TreeSet<Date>> tm) {
-        if (tm.size()>0){
-            try {
-                Xml save = new Xml();
-                save.initializeWriterEccezioni();
-                Iterator<String> it = tm.keySet().iterator();
-                while (it.hasNext()) {
-                    String key = it.next();
-                    Iterator<Date> value = tm.get(key).iterator();
-                    while (value.hasNext())
-                        save.addItemEccezione(key, convertDateToString(value.next()));
-                }
-                save.writeEccezioni(XML_ECCEZIONI);
-                printOk("XML eccezioni aggiornato");
-                tmEccezioni = tm;
-            } catch (IOException ex) {
-                printError(ex.getMessage());
-                ex.printStackTrace();
-            } catch (ParseException ex) {
-                printError(ex.getMessage());
-                ex.printStackTrace();
-            }
-        } else {
-            XML_ECCEZIONI.delete();
-            printOk(XML_ECCEZIONI.getName() + " cancellato");
-            tmEccezioni = null;
-        }
-    }
-*/
+
     public void backupXml(String backup) {
         ArrayList<File> files = new ArrayList<File>();
-        if (XML_ANAGRAFICA.exists())
-            files.add(XML_ANAGRAFICA);
+        if (XML_ANAGRAFICA_FIPAV.exists())
+            files.add(XML_ANAGRAFICA_FIPAV);
+        if (XML_ANAGRAFICA_PERSONA.exists())
+            files.add(XML_ANAGRAFICA_PERSONA);
         if (XML_CARTA.exists())
-            files.add(XML_CARTA);
-        //if (XML_ECCEZIONI.exists())
-            //files.add(XML_ECCEZIONI);
+            files.add(XML_CARTA);        
         if (XML_OPZIONI.exists())
             files.add(XML_OPZIONI);
         if (files.size()>0){
@@ -445,23 +442,20 @@ public class Kernel {
             printError(ex.getMessage());
             ex.printStackTrace();
         }
-    }
-
-    public void testXLS() {
-
-    }
+    }    
 
     public void createPDF(String namefile, String periodo) {        
         try {            
             Pdf pdf = new Pdf(namefile, "Rimborsi arbitri/osservatori", false);
-            Iterator<String> it = tmAnagrafica.keySet().iterator();
+            Iterator<String> it = tmAnagraficaPersona.keySet().iterator();
             while (it.hasNext()){
                 String nome = it.next();
                 if (calcoli.containsKey(nome)) {
                     ArrayList<Vector> array = calcoli.get(nome);
                     if (array.size()>1){
                         pdf.creaIntestazione();
-                        pdf.printAnagrafica(tmAnagrafica.get(nome),periodo);
+                        pdf.printAnagrafica(tmAnagraficaPersona.get(nome),
+                                tmAnagraficaFipav.get(nome), periodo);
                         pdf.printPartite(array);
                         pdf.printChiusura();
                         pdf.newPage();
@@ -492,7 +486,7 @@ public class Kernel {
     String convertDateToString(Date d) throws ParseException{
         return sdf.format(d);
     }
-    
+/*
     public void testDestinations(File file) {
         analyzeRimborsi(file, true);
     }
@@ -500,7 +494,7 @@ public class Kernel {
     public void writeRimborsi(File file){                   
         analyzeRimborsi(file, false);
     }
-    
+  */
     public void changeDesignazioni(Object name) {
         File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
         Xml load = new Xml();
@@ -518,7 +512,7 @@ public class Kernel {
     public void fireCalcoli(Date begin, Date end) {
         boolean ok = true;
         calcoli = new HashMap<String, ArrayList<Vector>>();
-        Iterator<String> it = tmAnagrafica.keySet().iterator();
+        Iterator<String> it = tmAnagraficaPersona.keySet().iterator();
         Xml load = new Xml();
         while (it.hasNext()) {
             String name = it.next();
@@ -526,7 +520,7 @@ public class Kernel {
             File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");            
             if (file.exists()) {
                 try {
-                    String residenza = tmAnagrafica.get(name).getCity_card();
+                    String residenza = tmAnagraficaFipav.get(name).getCity_card();
                     ArrayList<Object[]> dati = load.initializeReaderDesignazioni(file);
                     int tot_km = 0;
                     float tot_rimb = 0, tot_spesedoc = 0, tot_spesenon = 0, tot_partite = 0;
@@ -616,8 +610,12 @@ public class Kernel {
         return curDir;
     }
 
-    public String getTABLE_ANAGRAFICA() {
-        return TABLE_ANAGRAFICA;
+    public String getTABLE_ANAGRAFICA_PERSONA() {
+        return TABLE_ANAGRAFICA_PERSONA;
+    }
+
+    public String getTABLE_ANAGRAFICA_FIPAV() {
+        return TABLE_ANAGRAFICA_FIPAV;
     }
 
     public String getTABLE_CARTA() {
