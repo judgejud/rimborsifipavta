@@ -22,7 +22,7 @@ import java.util.Vector;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfacility.Text;
 
-import org.jfacility.swing.Swing;
+import org.jfacility.javax.swing.Swing;
 /**
  *
  * @author luca
