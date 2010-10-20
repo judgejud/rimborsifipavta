@@ -17,7 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import org.jfacility.lang.MySystem;
+import org.jfacility.java.lang.MySystem;
 /**
  *
  * @author luca

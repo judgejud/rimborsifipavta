@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.jfacility.swing.Swing;
+import org.jfacility.javax.swing.Swing;
 /**
  *
  * @author luca
