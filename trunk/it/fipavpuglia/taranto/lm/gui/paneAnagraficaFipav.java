@@ -17,7 +17,6 @@ class paneAnagraficaFipav extends paneAbstract{
     private final String[] items_comitati = {"", "TARANTO", "BARI", "BRINDISI", "LECCE"};
     private final String[] items_role = {"", "Arbitro", "Osservatore", "Presidente",
         "Consigliere"};
-    private ComboBoxEditor cbeArbitri;
     private cmbRenderer crArbitri;
 
     private paneAnagraficaFipav(){
@@ -48,9 +47,8 @@ class paneAnagraficaFipav extends paneAbstract{
         Swing.setTableDimensionLockColumn(jtable, 4, 100); //assegno
 
         TableColumn col_code = jtable.getColumnModel().getColumn(0); //codice
-        crArbitri = new cmbRenderer();
         col_code.setCellEditor(new ComboBoxEditor());
-        col_code.setCellRenderer(crArbitri);
+        col_code.setCellRenderer(new cmbRenderer());
 
         TableColumn col_role = jtable.getColumnModel().getColumn(2); //ruolo
         col_role.setCellEditor(new ComboBoxEditor(items_role));
@@ -72,12 +70,8 @@ class paneAnagraficaFipav extends paneAbstract{
     }
 
     void setComboArbitriValues(String[] arrayS) {
-        if (crArbitri.getItemCount()>0)
-            crArbitri.setModel(new DefaultComboBoxModel());
-        DefaultComboBoxModel dcbm = new DefaultComboBoxModel(arrayS);
-        dcbm.insertElementAt(null, 0);
-        crArbitri.setModel(dcbm);
-        jtable.getColumnModel().getColumn(0).setCellEditor(new ComboBoxEditor(arrayS));
-        //crArbitri.setSelectedIndex(0);
+        TableColumn col_code = jtable.getColumnModel().getColumn(0); //codice
+        col_code.setCellEditor(new ComboBoxEditor(arrayS));
+        col_code.setCellRenderer(new cmbRenderer(arrayS));
     }
 }
