@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.jfacility.Text;
 
 import org.jfacility.swing.Swing;
 /**
@@ -57,26 +58,6 @@ class Mediator {
                 fnfeXLS, new File(core.getCurDir()));
         if (name!=null)
             core.createNewPolymetric(new File(name));
-    }
-
-    void invokeTestDestinations(Component parent) {
-        /*
-        String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
-                fnfeXLS, new File(core.getCurDir()));
-        if (name!=null)
-            core.testDestinations(new File(name));
-         *
-         */
-    }
-
-    void invokeRimborsi(Component parent) {
-        /*
-        String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
-                fnfeXLS, new File(core.getCurDir()));
-        if (name!=null)
-            core.writeRimborsi(new File(name));
-         *
-         */
     }
 
     void invokeBackupXml(Component parent) {
@@ -165,36 +146,7 @@ class Mediator {
         if (!_break)
             core.saveAnagraficaFipav(tm);
     }
-/*
-    void saveEccezioni(Vector dataVector) {
-        String arbitro = null;
-        String _date = null;
-        TreeMap<String, TreeSet<Date>> tm = new TreeMap<String, TreeSet<Date>>();
-        boolean _break = false;
-        try {
-            for (int i=0; i<dataVector.size(); i++){
-                Vector temp = (Vector) dataVector.elementAt(i);
-                arbitro = ((String) temp.elementAt(0)).toUpperCase();
-                _date = (String) temp.elementAt(1);
-                Date d = core.convertStringToDate(_date);
-                if (tm.containsKey(arbitro)){
-                    if (tm.get(arbitro).contains(d)){
-                        printAlert("Trovato doppione: " + arbitro + " " + _date);
-                        _break = true;
-                        break;
-                    }
-                } else
-                    tm.put(arbitro, new TreeSet<Date>());
-                tm.get(arbitro).add(d);
-            }
-            if (!_break)
-                core.saveEccezioni(tm);
-        } catch (ParseException ex) {
-            printAlert("Non posso aggiungere la data pechè non nel formato gg/mm/yyyy: "
-                    + arbitro + " " + _date);
-        }
-    }
-*/
+
     void saveCarta(Vector dataVector) {
         Carta c = null;
         try {
@@ -225,16 +177,6 @@ class Mediator {
         }
     }
 
-    void invokeTestArbitri(Container parent) {
-        /*
-        String name = Swing.getFile(parent, "Selezionare il file excel del rimborso",
-                fnfeXLS, new File(core.getCurDir()));
-        if (name!=null)
-            core.testArbitri(new File(name));
-         *
-         */
-    }    
-
     void saveOption(Vector dataVector) {
         float[] values = new float[5];
         Vector temp = null;
@@ -258,20 +200,16 @@ class Mediator {
 
     void invokeCalcoli(String from, String to) {
         try {
-            Date begin = core.convertStringToDate(from);
-            Date end = core.convertStringToDate(to);
+            Date begin = Text.convertStringToDate(from);
+            Date end = Text.convertStringToDate(to);
             core.fireCalcoli(begin, end);
-        } catch (ParseException ex) {
+        } catch (ParseException e) {
             printAlert("controllare le date per il calcolo nel formato gg/mm/yyyy");
         }
     }
 
     void saveDesignazioni(Object selectedItem, Vector dataVector) {
         core.saveDesignazioni(selectedItem, dataVector);
-    }    
-
-    void testXLS() {
-        
     }
 
     void invokePrintPdf(Container parent, String from, String to) {

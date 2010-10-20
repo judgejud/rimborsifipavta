@@ -10,8 +10,8 @@ import java.util.EventObject;
 public class MyFrameEvent extends EventObject{
     private String nameDest;
     private ArrayList<Object[]> arraylist;
-    //private ArrayList<Float> arrayF;
-    private Object[] array;
+    private String[] arrayString;
+    private Float[] arrayFloat;
 
     public MyFrameEvent(Object source, String _name, ArrayList<Object[]> _array){
         super(source);
@@ -19,27 +19,28 @@ public class MyFrameEvent extends EventObject{
         arraylist = _array;
     }
 
-    public MyFrameEvent(Object source, String _name, Object[] _array){
+    public MyFrameEvent(Object source, String _name, String[] array){
         super(source);
         nameDest = _name;
-        array = _array;
+        arrayString = array;
     }
-/*
-    public MyFrameEvent(Object source, ArrayList<Float> _array, String _name){
+
+    public MyFrameEvent(Object source, String _name, Float[] array){
         super(source);
         nameDest = _name;
-        arrayF = _array;
+        arrayFloat = array;
     }
-    public ArrayList<Float> getArrayF() {
-        return arrayF;
-    }
-*/
+
     public ArrayList<Object[]> getArrayList() {
         return arraylist;
     }    
 
-    public Object[] getArrayO(){
-        return array;
+    public String[] getArrayString(){
+        return arrayString;
+    }
+
+    public Float[] getArrayFloat(){
+        return arrayFloat;
     }
 
     public String getNameDest() {
