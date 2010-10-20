@@ -1,9 +1,10 @@
 package it.fipavpuglia.taranto.lm.gui;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import org.jfacility.swing.ComboBoxEditor;
 
+import org.jfacility.swing.ComboBoxEditor;
 import org.jfacility.swing.Swing;
 /**
  *
@@ -16,6 +17,8 @@ class paneAnagraficaFipav extends paneAbstract{
     private final String[] items_comitati = {"", "TARANTO", "BARI", "BRINDISI", "LECCE"};
     private final String[] items_role = {"", "Arbitro", "Osservatore", "Presidente",
         "Consigliere"};
+    private ComboBoxEditor cbeArbitri;
+    private cmbRenderer crArbitri;
 
     private paneAnagraficaFipav(){
         super();
@@ -44,6 +47,11 @@ class paneAnagraficaFipav extends paneAbstract{
         Swing.setTableDimensionLockColumn(jtable, 3, 100); //comitato
         Swing.setTableDimensionLockColumn(jtable, 4, 100); //assegno
 
+        TableColumn col_code = jtable.getColumnModel().getColumn(0); //codice
+        crArbitri = new cmbRenderer();
+        col_code.setCellEditor(new ComboBoxEditor());
+        col_code.setCellRenderer(crArbitri);
+
         TableColumn col_role = jtable.getColumnModel().getColumn(2); //ruolo
         col_role.setCellEditor(new ComboBoxEditor(items_role));
         col_role.setCellRenderer(new cmbRenderer(items_role));
@@ -61,5 +69,15 @@ class paneAnagraficaFipav extends paneAbstract{
     @Override
     void save(){
         proxy.saveAnagraficaFipav(dtm.getDataVector());
+    }
+
+    void setComboArbitriValues(String[] arrayS) {
+        if (crArbitri.getItemCount()>0)
+            crArbitri.setModel(new DefaultComboBoxModel());
+        DefaultComboBoxModel dcbm = new DefaultComboBoxModel(arrayS);
+        dcbm.insertElementAt(null, 0);
+        crArbitri.setModel(dcbm);
+        jtable.getColumnModel().getColumn(0).setCellEditor(new ComboBoxEditor(arrayS));
+        //crArbitri.setSelectedIndex(0);
     }
 }

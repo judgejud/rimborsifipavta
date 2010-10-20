@@ -33,7 +33,6 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
     private paneAnagraficaPersona jpAnagraficaPersona;
     private paneAnagraficaFipav jpAnagraficaFipav;
     private paneCarta jpCarta;
-    //private paneEccezioni jpEccezioni;
     private panePartite jpPartite;
     private paneOpzioni jpOpzioni;
     private paneCalcoli jpCalcoli;
@@ -45,7 +44,6 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         this.setLayout(new BorderLayout());
         initMenuBar();
         initTabPanel();
-        this.setVisible(true);
         jtpLog = new textpaneLog();
         JScrollPane jScrollText1 = new JScrollPane(jtpLog);
         jScrollText1.setPreferredSize(TEXTPANESIZE);
@@ -53,6 +51,7 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         proxy.setTextPaneListener(jtpLog);
         addWindowListener(this);
         jtpLog.appendOK("Versione java in uso: " + MySystem.getJavaVersion());
+        this.setVisible(true);
     }
 
     private void initTabPanel(){
@@ -62,8 +61,6 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.addTab("Anagrafica Persona", jpAnagraficaPersona);
         jpAnagraficaFipav = paneAnagraficaFipav.getPanel();
         jtabbedpane.addTab("Anagrafica Fipav", jpAnagraficaFipav);
-        //jpEccezioni = paneEccezioni.getPanel();
-        //jtabbedpane.addTab("Eccezioni rimborsi", jpEccezioni);
         jpCarta = paneCarta.getPanel();
         jtabbedpane.addTab("Carta Polimetrica", jpCarta);
         jpPartite = panePartite.getPanel();
@@ -81,41 +78,18 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         JMenuBar jmenuBar = new JMenuBar();        
         // Create a menu
         JMenu jmenuWork = new JMenu(" Operazioni ");
-        JMenu jmenuTest = new JMenu(" Test ");
         //create items for menu operazioni
-        JMenuItem jmnItem01 = new JMenuItem(" Crea XML Carta Polimetrica ");        
-        JMenuItem jmnItemRimborsi = new JMenuItem(" Lavora rimborsi km ");
+        JMenuItem jmnItem01 = new JMenuItem(" Crea XML Carta Polimetrica ");
         JMenuItem jmnItemPulisci = new JMenuItem(" Pulisci log ");
         JMenuItem jmnItemBackupXml = new JMenuItem(" Backup xml ");
         JMenuItem jmnItemExit = new JMenuItem(" Uscita ");
-        JMenuItem jmnTestRimborsi = new JMenuItem(" Testa presenza località xls in xml");
-        JMenuItem jmnTestArbitri = new JMenuItem(" Testa presenza arbitri xls in xml ");
         
-        JMenuItem jmnTestXLS = new JMenuItem(" Testa scrittura xls ");
         jmnItem01.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 proxy.invokeNewPolymetric(getParent());
             }
-        });
-        jmnTestRimborsi.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                proxy.invokeTestDestinations(getParent());
-            }
-        });
-        jmnTestArbitri.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                proxy.invokeTestArbitri(getParent());
-            }
-        });
-        jmnItemRimborsi.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                proxy.invokeRimborsi(getParent());
-            }
-        });
+        });        
         jmnItemExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -134,24 +108,15 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
                 proxy.invokeBackupXml(jframe.this);
             }
         });        
-        jmnTestXLS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                proxy.testXLS();
-            }
-        });
+
         jmenuWork.add(jmnItem01);
-        jmenuWork.add(jmnItemRimborsi);
         jmenuWork.add(jmnItemPulisci);
         jmenuWork.add(jmnItemBackupXml);
-        jmenuWork.add(jmnItemExit);
-        jmenuTest.add(jmnTestArbitri);
-        jmenuTest.add(jmnTestRimborsi);
-        jmenuTest.add(jmnTestXLS);
+        jmenuWork.add(jmnItemExit);        
         jmenuBar.add(jmenuWork);
-        jmenuBar.add(jmenuTest);
         this.setJMenuBar(jmenuBar);
     }
+
     @Override
     public void objReceived(MyFrameEvent evt) {
         if (evt.getNameDest().equals(proxy.getNameTableAnagraficaPersona()))
@@ -161,15 +126,14 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         else if (evt.getNameDest().equals(proxy.getNameTableCarta()))
             jpCarta.addRows(evt.getArrayList());
         else if (evt.getNameDest().equals(proxy.getNameTableOptions()))
-            jpOpzioni.setTableValues(evt.getArrayO());
-        else if (evt.getNameDest().equals(proxy.getNameComboArbitri()))
-            jpPartite.setComboArbitriValues(evt.getArrayO());
-        else if (evt.getNameDest().equals(proxy.getNameComboLocalita()))
-            jpPartite.setComboLocalitaValues(evt.getArrayO());
+            jpOpzioni.setTableValues(evt.getArrayFloat());
+        else if (evt.getNameDest().equals(proxy.getNameComboArbitri())){
+            jpPartite.setComboArbitriValues(evt.getArrayString());
+            jpAnagraficaFipav.setComboArbitriValues(evt.getArrayString());
+        } else if (evt.getNameDest().equals(proxy.getNameComboLocalita()))
+            jpPartite.setComboLocalitaValues(evt.getArrayString());
         else if (evt.getNameDest().equals(proxy.getNameTableDesignaz()))
             jpPartite.addRows(evt.getArrayList());
-        //else if (evt.getNametable().equals(proxy.getNameTableEcccezioni()))
-            //jpEccezioni.addRows(evt.getArray());
     }
     @Override
     public void windowOpened(WindowEvent e) {}

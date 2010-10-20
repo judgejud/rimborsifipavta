@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import org.jdom.JDOMException;
+import org.jfacility.Text;
 
 import org.jfacility.lang.MySystem;
 import org.jfacility.Util;
@@ -80,12 +81,14 @@ public class Kernel {
             if (temp!=null) {
                 fireNewFrameEvent(TABLE_ANAGRAFICA_PERSONA, temp);
                 tmAnagraficaPersona = load.getMapAnagraficaPersona();
-                fireNewFrameEvent(COMBO_ARBITRI, tmAnagraficaPersona.keySet().toArray());
+                fireNewFrameEvent(COMBO_ARBITRI, 
+                        tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]));
             }
             temp = load.initializeReaderCarta(XML_CARTA);
             if (temp!=null) {
                 fireNewFrameEvent(TABLE_CARTA, temp);
-                fireNewFrameEvent(COMBO_LOCALITA, load.getSetCarta().toArray());
+                fireNewFrameEvent(COMBO_LOCALITA, 
+                        load.getSetCarta().toArray(new String[load.getSetCarta().size()]));
                 tmCarta = load.getMapCarta();
             }
             ArrayList<Object> opt = load.initializeReaderOpzioni(XML_OPZIONI);
@@ -95,7 +98,7 @@ public class Kernel {
                 costoDoppiaP = ((Float)opt.get(2)).floatValue();
                 costoReferto = ((Float)opt.get(3)).floatValue();
                 limiteKm = ((Float)opt.get(4)).floatValue();
-                fireNewFrameEvent(TABLE_OPZIONI, opt.toArray());
+                fireNewFrameEvent(TABLE_OPZIONI, opt.toArray(new Float[opt.size()]));
             }            
         } catch (JDOMException ex) {
             printError(ex.getMessage());
@@ -319,7 +322,9 @@ public class Kernel {
                 printOk("XML dati personali arbitro aggiornato");
                 tmAnagraficaPersona = tm;
                 //TODO: fare altro fire per la combo arbitri nella parte dati fipav arbitri
-                fireNewFrameEvent(COMBO_ARBITRI, tmAnagraficaPersona.keySet().toArray());
+                tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]);
+                fireNewFrameEvent(COMBO_ARBITRI, 
+                        tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]));
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
@@ -479,22 +484,6 @@ public class Kernel {
         }
     }
     
-    public Date convertStringToDate(String _date) throws ParseException{
-        return sdf.parse(_date);
-    }
-
-    String convertDateToString(Date d) throws ParseException{
-        return sdf.format(d);
-    }
-/*
-    public void testDestinations(File file) {
-        analyzeRimborsi(file, true);
-    }
-
-    public void writeRimborsi(File file){                   
-        analyzeRimborsi(file, false);
-    }
-  */
     public void changeDesignazioni(Object name) {
         File file = new File(curDir + DESIGNAZIONI_DIR + name.toString()+".xml");
         Xml load = new Xml();
@@ -526,13 +515,13 @@ public class Kernel {
                     float tot_rimb = 0, tot_spesedoc = 0, tot_spesenon = 0, tot_partite = 0;
                     Date oldDate = null;
                     try {
-                        oldDate = convertStringToDate("01/01/2000");
+                        oldDate = Text.convertStringToDate("01/01/2000");
                     } catch (ParseException ex) {}
                     for (int i=0; i<dati.size(); i++){
                         Object partita[] = dati.get(i);
                         Date data_design = null;
                         try {
-                            data_design = convertStringToDate(partita[0].toString());
+                            data_design = Text.convertStringToDate(partita[0].toString());
                         } catch (ParseException ex) {}
                         if (data_design.getTime() >= begin.getTime()){
                             if (data_design.getTime() <= end.getTime()){
@@ -684,12 +673,21 @@ public class Kernel {
         }
     }
 
-    private synchronized void fireNewFrameEvent(String _name, Object[] _array) {
+    private synchronized void fireNewFrameEvent(String _name, String[] _array) {
         MyFrameEvent event = new MyFrameEvent(this, _name, _array);
         Iterator listeners = listenerFrame.iterator();
         while(listeners.hasNext()) {
             MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
             myel.objReceived(event);
         }
-    }    
+    }
+
+    private synchronized void fireNewFrameEvent(String _name, Float[] _array) {
+        MyFrameEvent event = new MyFrameEvent(this, _name, _array);
+        Iterator listeners = listenerFrame.iterator();
+        while(listeners.hasNext()) {
+            MyFrameEventListener myel = (MyFrameEventListener)listeners.next();
+            myel.objReceived(event);
+        }
+    }
 }
