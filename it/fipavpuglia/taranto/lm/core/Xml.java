@@ -73,7 +73,7 @@ class Xml {
     /**inizializza il documento AnagraficaFipav per la scrittura */
     void initializeWriterAnagraficaFipav(){
         root = new Element(TAG_ROOT);
-        jdomAnagraficaPersona = new Document(root);
+        jdomAnagraficaFipav = new Document(root);
     }
     /**inizializza il documento Opzioni per la scrittura */
     void initializeWriterOptions() {
