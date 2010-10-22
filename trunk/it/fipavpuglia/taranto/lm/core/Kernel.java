@@ -60,6 +60,8 @@ public class Kernel {
     private TreeMap<String, AnagraficaFipav> tmAnagraficaFipav = null;
     private TreeMap<Carta, String> tmCarta;
     private HashMap<String, ArrayList<Vector>> calcoli;
+    private HashMap<String, Vector> totali;
+
 
     /**Costruttore privato*/
     private Kernel(){
@@ -308,7 +310,7 @@ public class Kernel {
             printError(ex.getMessage());
             ex.printStackTrace();
         }
-    }    
+    }
 
     public void createPDF(String namefile, String periodo) {        
         try {            
@@ -328,6 +330,8 @@ public class Kernel {
                     }
                 }
             }
+            //TODO STAMPA TOTALI
+            
             pdf.close();
             printOk("PDF creato correttamente");
         } catch (BadElementException ex) {
@@ -343,6 +347,10 @@ public class Kernel {
             printError(ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    public void createXLS(String name, String string) {
+
     }
     
     public void changeDesignazioni(Object name) {
@@ -360,8 +368,8 @@ public class Kernel {
     }
 
     public void fireCalcoli(Date begin, Date end) {
-        boolean ok = true;
         calcoli = new HashMap<String, ArrayList<Vector>>();
+        totali = new HashMap<String, Vector>();
         Iterator<String> it = tmAnagraficaPersona.keySet().iterator();
         Xml load = new Xml();
         while (it.hasNext()) {
@@ -444,6 +452,7 @@ public class Kernel {
                     v.add(totale);
                     array.add(v);
                     calcoli.put(name, array);
+                    totali.put(name, v);
                 } catch (JDOMException ex) {
                     printError(ex.getMessage());
                     ex.printStackTrace();

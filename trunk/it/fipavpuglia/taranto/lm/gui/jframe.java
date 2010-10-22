@@ -65,10 +65,10 @@ public class jframe extends JFrame implements WindowListener, MyFrameEventListen
         jtabbedpane.addTab("Carta Polimetrica", jpCarta);
         jpPartite = panePartite.getPanel();
         jtabbedpane.addTab("Designazioni", jpPartite);
-        jpOpzioni = paneOpzioni.getPanel();
-        jtabbedpane.addTab("Opzioni", jpOpzioni);
         jpCalcoli = paneCalcoli.getPanel();
         jtabbedpane.addTab("Calcoli", jpCalcoli);
+        jpOpzioni = paneOpzioni.getPanel();
+        jtabbedpane.addTab("Opzioni", jpOpzioni);
         this.add(jtabbedpane, BorderLayout.CENTER);
         proxy.setFrameListener(this);
     }

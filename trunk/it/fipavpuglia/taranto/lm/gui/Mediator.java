@@ -223,6 +223,13 @@ class Mediator {
             core.createPDF(name, from+"-"+to);
     }
 
+    void invokePrintXLS(Container parent, String from, String to) {
+        String name = Swing.getFile(parent, "dare un nome al file XLS da generare",
+                fnfeXLS, new File(core.getCurDir()));
+        if (name!=null)
+            core.createXLS(name, from+"-"+to);
+    }
+
     String getNameTableAnagraficaPersona(){
         return core.getTABLE_ANAGRAFICA_PERSONA();
     }
