@@ -108,6 +108,8 @@ class Mediator {
                 String residenza_città = (String)temp.elementAt(6);
                 String indirizzo = (String)temp.elementAt(7);
                 String cap = String.valueOf(temp.elementAt(8));
+                if (cap==null || cap.equalsIgnoreCase("null"))
+                    cap = "";
                 
                 AnagraficaPersona a = new AnagraficaPersona(nome, luogo_nascita,
                         data_nascita, codice_fiscale, residenza_città,
@@ -132,10 +134,12 @@ class Mediator {
                 printAlert("Trovato doppione: " + code);
                 break;
             } else {
-                String residenza_carta = ((String)temp.elementAt(1)).toUpperCase();
+                String residenza_carta = ((String)temp.elementAt(1));
+                if (residenza_carta!=null)
+                    residenza_carta = residenza_carta.toUpperCase();
                 String ruolo = (String)temp.elementAt(2);
-                String comitato = (String)temp.elementAt(3);                
-                String assegno = String.valueOf(temp.elementAt(12));
+                String comitato = (String)temp.elementAt(3);
+                String assegno = String.valueOf(temp.elementAt(4));
 
                 AnagraficaFipav a = new AnagraficaFipav(ruolo, residenza_carta, comitato,
                         assegno);

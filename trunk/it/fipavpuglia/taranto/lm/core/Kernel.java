@@ -59,7 +59,6 @@ public class Kernel {
     private TreeMap<String, AnagraficaPersona> tmAnagraficaPersona = null;
     private TreeMap<String, AnagraficaFipav> tmAnagraficaFipav = null;
     private TreeMap<Carta, String> tmCarta;
-    //private TreeMap<String, TreeSet<Date>> tmEccezioni;
     private HashMap<String, ArrayList<Vector>> calcoli;
 
     /**Costruttore privato*/
@@ -83,6 +82,11 @@ public class Kernel {
                 tmAnagraficaPersona = load.getMapAnagraficaPersona();
                 fireNewFrameEvent(COMBO_ARBITRI, 
                         tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]));
+            }
+            temp = load.initializeReaderAnagraficaFipav(XML_ANAGRAFICA_FIPAV);
+            if (temp!=null) {
+                fireNewFrameEvent(TABLE_ANAGRAFICA_FIPAV, temp);
+                tmAnagraficaFipav = load.getMapAnagraficaFipav();
             }
             temp = load.initializeReaderCarta(XML_CARTA);
             if (temp!=null) {
@@ -163,150 +167,7 @@ public class Kernel {
             ex.printStackTrace();
         }
     }
-/*
-    public void testArbitri(File file) {
-        try {            
-            Workbook workBook = WorkbookFactory.create(new FileInputStream(file));
-            boolean test = true;
-            for (int i=0; i<workBook.getNumberOfSheets()-1; i++){
-                Sheet sheet = workBook.getSheetAt(i);
-                String arbitro = sheet.getSheetName().toUpperCase();
-                String residenza = null;
-                if (!tmAnagraficaPersona.containsKey(arbitro)){
-                    test = false;
-                    residenza = sheet.getRow(5).getCell(5).getStringCellValue();
-                    printAlert("Arbitro assente nell'xml: " + arbitro + " - " + residenza);
-                }
-            }
-            if (test)
-                printOk("test arbitri " + file.getName() + " ok");
-        } catch (InvalidFormatException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-    
-    private void analyzeRimborsi(File file, boolean flag_test){
-        try {
-            long start = System.currentTimeMillis();
-            Workbook workBook = WorkbookFactory.create(new FileInputStream(file));
-            if (flag_test){
-                boolean test = true;
-                for (int i=0; i<workBook.getNumberOfSheets(); i++){
-                    boolean temp = testSheet(workBook.getSheetAt(i));
-                    if (test & !temp)
-                        test = false;
-                }
-                if (test)
-                    printOk("Le località in " + file.getName() +
-                            " sono presenti nell'xml, puoi avviare la scrittura rimborsi.");
-            } else {
-                for (int i=0; i<workBook.getNumberOfSheets()-1; i++)
-                    analyzeSheet(workBook.getSheetAt(i));                                
-            }
-            if (!flag_test){
-                // Write the output to a file
-                FileOutputStream fileOut = new FileOutputStream(file);
-                workBook.write(fileOut);
-                fileOut.close();
-                long diff = System.currentTimeMillis() -start;
-                printOk("Aggiornamento " +file.getName() + " terminato in " +
-                        diff + " millisecondi");
-            }        
-        } catch (InvalidFormatException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        } catch (NumberFormatException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            printError(ex.getMessage());
-            ex.printStackTrace();
-        }
-    }    
 
-    private void analyzeSheet(Sheet sheet) throws NumberFormatException, IOException{
-        String arbitro = sheet.getSheetName().toUpperCase();
-        if (tmAnagraficaPersona.containsKey(arbitro)){
-            String residenza = tmAnagraficaPersona.get(arbitro).getCity_card();
-            Iterator<Row> rows = sheet.rowIterator();
-            Date oldData = new Date(0);
-            Iterator<Date> it = null;
-            Date d = null;
-            if (tmEccezioni!= null && tmEccezioni.containsKey(arbitro)){
-                 it = tmEccezioni.get(arbitro).iterator();
-                 d = it.next();
-            }
-            while (rows.hasNext()){
-                Row row = (Row) rows.next ();
-                // display row number in the console.
-                if (row.getRowNum() >= 11){
-                    Cell cLoc = row.getCell(18);
-                    String localita = cLoc.getStringCellValue();
-                    if (localita.equals(""))
-                        break;
-                    else {                        
-                        int km = 0;
-                        if (!residenza.toUpperCase().equalsIgnoreCase(localita.toUpperCase())) {
-                            Cell cData = row.getCell(2);
-                            Date actualDate = cData.getDateCellValue();
-                            boolean flag = true;
-                            if (it!=null && d.equals(actualDate)){
-                                flag = false;
-                                if (it.hasNext())
-                                    d = it.next();
-                            }
-                            if (flag && !oldData.equals(actualDate)){
-                                Carta c = new Carta(localita, residenza);
-                                km = Integer.parseInt(tmCarta.get(c)) * 2;
-                            } //end if data
-                            oldData = actualDate;
-                        }//end if
-                        CellStyle style = row.getCell(24).getCellStyle();
-                        int type = row.getCell(24).getCellType();
-                        Cell cKM = row.createCell(24);
-                        cKM.setCellStyle(style);
-                        cKM.setCellType(type);
-                        cKM.setCellValue(km);
-                    }
-                }
-            } //end while
-        } else //end if residenza
-            printAlert("Arbitro assente nell'xml: "+arbitro);
-    }
-
-    private boolean testSheet(Sheet sheet) {
-        String arbitro = sheet.getSheetName().toUpperCase();
-        boolean verify = true;
-        if (tmAnagraficaPersona.containsKey(arbitro)){
-            String residenza = tmAnagrafica.get(arbitro).getCity_card();
-            Iterator<Row> rows = sheet.rowIterator();
-            while (rows.hasNext()){
-                Row row = (Row) rows.next ();
-                // display row number in the console.
-                if (row.getRowNum() >= 11){
-                    String localita = row.getCell(18).getStringCellValue();
-                    if (localita.equals(""))
-                        break;
-                    else {
-                        if (!residenza.toUpperCase().equalsIgnoreCase(localita.toUpperCase())) {
-                                Carta c = new Carta(localita, residenza);
-                                if (!tmCarta.containsKey(c)) {
-                                    printAlert("XML Carta: manca la seguente coppia di paesi: " +
-                                        residenza + " " + localita);
-                                        verify = false;
-                                }
-                        }//end if
-                    }
-                }
-            } //end while
-        } //end if residenza
-        return verify;
-    }
-*/
     public void saveAnagraficaPersona(TreeMap<String, AnagraficaPersona> tm) {
         if (tm.size()>0){
             try {
@@ -691,3 +552,148 @@ public class Kernel {
         }
     }
 }
+
+/*
+    public void testArbitri(File file) {
+        try {
+            Workbook workBook = WorkbookFactory.create(new FileInputStream(file));
+            boolean test = true;
+            for (int i=0; i<workBook.getNumberOfSheets()-1; i++){
+                Sheet sheet = workBook.getSheetAt(i);
+                String arbitro = sheet.getSheetName().toUpperCase();
+                String residenza = null;
+                if (!tmAnagraficaPersona.containsKey(arbitro)){
+                    test = false;
+                    residenza = sheet.getRow(5).getCell(5).getStringCellValue();
+                    printAlert("Arbitro assente nell'xml: " + arbitro + " - " + residenza);
+                }
+            }
+            if (test)
+                printOk("test arbitri " + file.getName() + " ok");
+        } catch (InvalidFormatException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void analyzeRimborsi(File file, boolean flag_test){
+        try {
+            long start = System.currentTimeMillis();
+            Workbook workBook = WorkbookFactory.create(new FileInputStream(file));
+            if (flag_test){
+                boolean test = true;
+                for (int i=0; i<workBook.getNumberOfSheets(); i++){
+                    boolean temp = testSheet(workBook.getSheetAt(i));
+                    if (test & !temp)
+                        test = false;
+                }
+                if (test)
+                    printOk("Le località in " + file.getName() +
+                            " sono presenti nell'xml, puoi avviare la scrittura rimborsi.");
+            } else {
+                for (int i=0; i<workBook.getNumberOfSheets()-1; i++)
+                    analyzeSheet(workBook.getSheetAt(i));
+            }
+            if (!flag_test){
+                // Write the output to a file
+                FileOutputStream fileOut = new FileOutputStream(file);
+                workBook.write(fileOut);
+                fileOut.close();
+                long diff = System.currentTimeMillis() -start;
+                printOk("Aggiornamento " +file.getName() + " terminato in " +
+                        diff + " millisecondi");
+            }
+        } catch (InvalidFormatException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            printError(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void analyzeSheet(Sheet sheet) throws NumberFormatException, IOException{
+        String arbitro = sheet.getSheetName().toUpperCase();
+        if (tmAnagraficaPersona.containsKey(arbitro)){
+            String residenza = tmAnagraficaPersona.get(arbitro).getCity_card();
+            Iterator<Row> rows = sheet.rowIterator();
+            Date oldData = new Date(0);
+            Iterator<Date> it = null;
+            Date d = null;
+            if (tmEccezioni!= null && tmEccezioni.containsKey(arbitro)){
+                 it = tmEccezioni.get(arbitro).iterator();
+                 d = it.next();
+            }
+            while (rows.hasNext()){
+                Row row = (Row) rows.next ();
+                // display row number in the console.
+                if (row.getRowNum() >= 11){
+                    Cell cLoc = row.getCell(18);
+                    String localita = cLoc.getStringCellValue();
+                    if (localita.equals(""))
+                        break;
+                    else {
+                        int km = 0;
+                        if (!residenza.toUpperCase().equalsIgnoreCase(localita.toUpperCase())) {
+                            Cell cData = row.getCell(2);
+                            Date actualDate = cData.getDateCellValue();
+                            boolean flag = true;
+                            if (it!=null && d.equals(actualDate)){
+                                flag = false;
+                                if (it.hasNext())
+                                    d = it.next();
+                            }
+                            if (flag && !oldData.equals(actualDate)){
+                                Carta c = new Carta(localita, residenza);
+                                km = Integer.parseInt(tmCarta.get(c)) * 2;
+                            } //end if data
+                            oldData = actualDate;
+                        }//end if
+                        CellStyle style = row.getCell(24).getCellStyle();
+                        int type = row.getCell(24).getCellType();
+                        Cell cKM = row.createCell(24);
+                        cKM.setCellStyle(style);
+                        cKM.setCellType(type);
+                        cKM.setCellValue(km);
+                    }
+                }
+            } //end while
+        } else //end if residenza
+            printAlert("Arbitro assente nell'xml: "+arbitro);
+    }
+
+    private boolean testSheet(Sheet sheet) {
+        String arbitro = sheet.getSheetName().toUpperCase();
+        boolean verify = true;
+        if (tmAnagraficaPersona.containsKey(arbitro)){
+            String residenza = tmAnagrafica.get(arbitro).getCity_card();
+            Iterator<Row> rows = sheet.rowIterator();
+            while (rows.hasNext()){
+                Row row = (Row) rows.next ();
+                // display row number in the console.
+                if (row.getRowNum() >= 11){
+                    String localita = row.getCell(18).getStringCellValue();
+                    if (localita.equals(""))
+                        break;
+                    else {
+                        if (!residenza.toUpperCase().equalsIgnoreCase(localita.toUpperCase())) {
+                                Carta c = new Carta(localita, residenza);
+                                if (!tmCarta.containsKey(c)) {
+                                    printAlert("XML Carta: manca la seguente coppia di paesi: " +
+                                        residenza + " " + localita);
+                                        verify = false;
+                                }
+                        }//end if
+                    }
+                }
+            } //end while
+        } //end if residenza
+        return verify;
+    }
+*/
