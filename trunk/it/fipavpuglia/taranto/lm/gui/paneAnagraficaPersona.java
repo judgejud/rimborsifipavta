@@ -44,10 +44,10 @@ class paneAnagraficaPersona extends paneAbstract{
         };        
         jtable.setModel(dtm);
         
-        Swing.setTableDimensionLockColumn(jtable, 2, 60); //sesso
+        Swing.setTableDimensionLockColumn(jtable, 2, 55); //sesso
         Swing.setTableDimensionLockColumn(jtable, 3, 90); //data nascita
-        Swing.setTableDimensionLockColumn(jtable, 5, 120); //codice fiscale
-        Swing.setTableDimensionLockColumn(jtable, 8, 50); //cap
+        Swing.setTableDimensionLockColumn(jtable, 5, 125); //codice fiscale
+        Swing.setTableDimensionLockColumn(jtable, 8, 40); //cap
         
         TableColumn col_sex = jtable.getColumnModel().getColumn(2); //sesso
         col_sex.setCellEditor(new ComboBoxEditor(items_sex));
