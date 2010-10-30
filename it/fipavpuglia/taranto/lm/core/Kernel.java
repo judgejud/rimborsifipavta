@@ -19,6 +19,7 @@ import it.fipavpuglia.taranto.lm.gui.events.*;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.DocumentException;
+import java.util.TreeSet;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -182,10 +183,8 @@ public class Kernel {
                     save.addItemAnagraficaPersona(key, value);
                 }
                 save.writeAnagraficaPersona(XML_ANAGRAFICA_PERSONA);
-                printOk("XML dati personali arbitro aggiornato");
+                printOk("XML dati personali aggiornati");
                 tmAnagraficaPersona = tm;
-                //TODO: fare altro fire per la combo arbitri nella parte dati fipav arbitri
-                tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]);
                 fireNewFrameEvent(COMBO_ARBITRI, 
                         tmAnagraficaPersona.keySet().toArray(new String[tmAnagraficaPersona.size()]));
             } catch (IOException ex) {
@@ -208,14 +207,14 @@ public class Kernel {
                     save.addItemAnagraficaFipav(key, value);
                 }
                 save.writeAnagraficaFipav(XML_ANAGRAFICA_FIPAV);
-                printOk("XML dati fipav arbitro aggiornato");
+                printOk("XML dati fipav aggiornati");
                 tmAnagraficaFipav = tm;
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
             }
         } else
-            printAlert("non ho elementi da salvare nell'xml anagrafica");
+            printAlert("non ho elementi da salvare nell'xml dati fipav");
     }
 
     public void saveCarta(TreeMap<Carta, String> tm) {
@@ -224,14 +223,18 @@ public class Kernel {
                 Xml save = new Xml();
                 Iterator<Carta> it = tm.keySet().iterator();
                 save.initializeWriterCarta();
+                TreeSet<String> ts = new TreeSet<String>();
                 while (it.hasNext()) {
                     Carta key = it.next();
                     String value = tm.get(key);
                     save.addItemCarta(key.getPartenza(), key.getArrivo(), value);
+                    ts.add(key.getArrivo());
+                    ts.add(key.getPartenza());
                 }
                 save.writeCarta(XML_CARTA);
                 printOk("XML Carta polimetrica aggiornata");
                 tmCarta = tm;
+                fireNewFrameEvent(COMBO_LOCALITA, ts.toArray(new String[ts.size()]));
             } catch (IOException ex) {
                 printError(ex.getMessage());
                 ex.printStackTrace();
@@ -309,6 +312,8 @@ public class Kernel {
         } catch (IOException ex) {
             printError(ex.getMessage());
             ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            printAlert("la colonna data/designazione/località non può essere nulla");
         }
     }
 
